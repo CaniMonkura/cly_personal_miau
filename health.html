@@ -461,6 +461,118 @@ main {
   .stack-search-results { width: 100%; }
 }
 
+/* ── Body Metrics ── */
+.bm-section { margin-top: 56px; }
+.bm-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.bm-header .section-title { margin: 0; }
+.bm-log-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 10px;
+  background: var(--accent); color: #fff; border: none;
+  cursor: pointer; font-family: var(--font); font-size: 13px; font-weight: 600;
+  transition: opacity 0.15s;
+}
+.bm-log-btn:hover { opacity: 0.85; }
+.bm-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.bm-card {
+  background: var(--bg-card); border-radius: 14px;
+  padding: 14px 16px 10px; border: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.bm-card-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-tertiary);
+}
+.bm-card-value-row { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.bm-card-value {
+  font-family: var(--font-mono); font-size: 22px; font-weight: 700;
+  color: var(--text-primary); font-variant-numeric: tabular-nums;
+}
+.bm-card-unit { font-size: 12px; color: var(--text-tertiary); }
+.bm-card-delta { font-family: var(--font-mono); font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.bm-card-delta.pos { color: #6BE3A4; }
+.bm-card-delta.neg { color: #FF6B6B; }
+.bm-card-delta.neu { color: var(--text-tertiary); }
+.bm-sparkline { margin-top: 8px; width: 100%; height: 40px; overflow: visible; }
+.bm-empty {
+  text-align: center; padding: 32px; color: var(--text-tertiary); font-size: 13px;
+  background: var(--bg-card); border-radius: 14px;
+  border: 1px dashed var(--border); grid-column: 1 / -1;
+}
+.bm-history { margin-top: 16px; }
+.bm-history-title {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 10px;
+}
+.bm-history-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 14px; border-radius: 10px;
+  background: var(--bg-secondary); border: 1px solid var(--border-soft);
+  margin-bottom: 6px; font-size: 12px; color: var(--text-secondary);
+}
+.bm-history-date {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text-tertiary); flex-shrink: 0; min-width: 88px; padding-top: 2px;
+}
+.bm-history-values { flex: 1; line-height: 1.7; }
+.bm-history-del {
+  background: none; border: none; color: var(--text-quaternary);
+  cursor: pointer; font-size: 18px; padding: 0 2px; line-height: 1;
+  transition: color 0.15s; flex-shrink: 0;
+}
+.bm-history-del:hover { color: #FF6B6B; }
+/* Modal */
+.bm-modal-bg {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.72); z-index: 200;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(6px); padding: 20px;
+}
+.bm-modal-bg.show { display: flex; }
+.bm-modal {
+  background: #111113; border: 1px solid var(--border-strong);
+  border-radius: 20px; padding: 28px;
+  width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
+}
+.bm-modal-title { font-size: 17px; font-weight: 700; color: var(--text-primary); margin: 0 0 6px; }
+.bm-modal-protocol {
+  font-size: 11px; color: var(--text-tertiary); margin: 0 0 20px;
+  line-height: 1.6; padding: 10px 12px;
+  background: rgba(255,255,255,0.03); border-radius: 8px;
+  border-left: 2px solid var(--accent);
+}
+.bm-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.bm-form-field { display: flex; flex-direction: column; gap: 5px; }
+.bm-form-field.full { grid-column: 1 / -1; }
+.bm-form-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-tertiary);
+}
+.bm-form-input {
+  background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: 8px; padding: 9px 12px; color: var(--text-primary);
+  font-family: var(--font-mono); font-size: 14px; width: 100%;
+}
+.bm-form-input:focus { outline: none; border-color: var(--accent); background: var(--bg-input-focus); }
+.bm-modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.bm-cancel-btn {
+  padding: 9px 18px; border-radius: 10px;
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  color: var(--text-secondary); cursor: pointer; font-family: var(--font); font-size: 14px;
+}
+.bm-save-btn {
+  padding: 9px 18px; border-radius: 10px;
+  background: var(--accent); border: none;
+  color: #fff; cursor: pointer; font-family: var(--font); font-size: 14px; font-weight: 600;
+}
+@media (max-width: 480px) {
+  .bm-grid { gap: 8px; }
+  .bm-card { padding: 12px 12px 8px; }
+  .bm-card-value { font-size: 18px; }
+  .bm-section { margin-top: 40px; }
+  .bm-modal { padding: 20px; }
+}
+
 ::selection { background: rgba(224, 118, 88, 0.3); color: var(--text-primary); }
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -513,6 +625,15 @@ main {
     </div>
   </div>
 
+  <section class="bm-section">
+    <div class="bm-header">
+      <div class="section-title">Body Metrics</div>
+      <button class="bm-log-btn" id="bmLogBtn">+ Log Measurement</button>
+    </div>
+    <div id="bmGrid" class="bm-grid"></div>
+    <div id="bmHistory" class="bm-history" hidden></div>
+  </section>
+
   <section id="water" class="water-embed">
     <div class="section-title">Water Tracker</div>
     <iframe src="po-water.html" class="water-iframe" loading="lazy" title="Water Tracker"></iframe>
@@ -520,6 +641,55 @@ main {
 
   <div class="attribution">// editable template · all data stays in your browser</div>
 </main>
+
+<div class="bm-modal-bg" id="bmModalBg">
+  <div class="bm-modal">
+    <div class="bm-modal-title">Log Body Measurement</div>
+    <div class="bm-modal-protocol">📋 Protokoll: Morgens nach dem Aufstehen + Toilette, nüchtern, gleiche Kleidung. 3× messen, Durchschnitt nehmen.</div>
+    <div class="bm-form-grid">
+      <div class="bm-form-field full">
+        <div class="bm-form-label">Datum</div>
+        <input type="date" class="bm-form-input" id="bm_date" />
+      </div>
+      <div class="bm-form-field">
+        <div class="bm-form-label">Gewicht (kg)</div>
+        <input type="number" step="0.1" class="bm-form-input" id="bm_weight" placeholder="—" />
+      </div>
+      <div class="bm-form-field">
+        <div class="bm-form-label">Taille (cm)</div>
+        <input type="number" step="0.5" class="bm-form-input" id="bm_waist" placeholder="—" />
+      </div>
+      <div class="bm-form-field">
+        <div class="bm-form-label">Hüfte (cm)</div>
+        <input type="number" step="0.5" class="bm-form-input" id="bm_hips" placeholder="—" />
+      </div>
+      <div class="bm-form-field">
+        <div class="bm-form-label">Brust (cm)</div>
+        <input type="number" step="0.5" class="bm-form-input" id="bm_chest" placeholder="—" />
+      </div>
+      <div class="bm-form-field">
+        <div class="bm-form-label">Oberschenkel L (cm)</div>
+        <input type="number" step="0.5" class="bm-form-input" id="bm_thighL" placeholder="—" />
+      </div>
+      <div class="bm-form-field">
+        <div class="bm-form-label">Oberschenkel R (cm)</div>
+        <input type="number" step="0.5" class="bm-form-input" id="bm_thighR" placeholder="—" />
+      </div>
+      <div class="bm-form-field">
+        <div class="bm-form-label">Bizeps L (cm)</div>
+        <input type="number" step="0.5" class="bm-form-input" id="bm_bicepL" placeholder="—" />
+      </div>
+      <div class="bm-form-field">
+        <div class="bm-form-label">Bizeps R (cm)</div>
+        <input type="number" step="0.5" class="bm-form-input" id="bm_bicepR" placeholder="—" />
+      </div>
+    </div>
+    <div class="bm-modal-actions">
+      <button class="bm-cancel-btn" id="bmCancel">Abbrechen</button>
+      <button class="bm-save-btn" id="bmSave">Speichern</button>
+    </div>
+  </div>
+</div>
 
 <script>
 (() => {
@@ -1038,11 +1208,155 @@ main {
 </script>
 
 <script>
+(function () {
+  'use strict';
+  const BM_KEY = 'body_metrics_v1';
+  const METRICS = [
+    { id: 'weight', label: 'Gewicht',        unit: 'kg',  dir: null  },
+    { id: 'waist',  label: 'Taille',         unit: 'cm',  dir: -1    },
+    { id: 'hips',   label: 'Hüfte',          unit: 'cm',  dir: null  },
+    { id: 'chest',  label: 'Brust',          unit: 'cm',  dir: 1     },
+    { id: 'thighL', label: 'Oberschenkel L', unit: 'cm',  dir: 1     },
+    { id: 'thighR', label: 'Oberschenkel R', unit: 'cm',  dir: 1     },
+    { id: 'bicepL', label: 'Bizeps L',       unit: 'cm',  dir: 1     },
+    { id: 'bicepR', label: 'Bizeps R',       unit: 'cm',  dir: 1     },
+  ];
+
+  let entries = [];
+
+  function load() {
+    try { entries = JSON.parse(localStorage.getItem(BM_KEY)) || []; } catch { entries = []; }
+    if (!Array.isArray(entries)) entries = [];
+    entries.sort((a, b) => b.date.localeCompare(a.date));
+  }
+  function save() {
+    try { localStorage.setItem(BM_KEY, JSON.stringify(entries)); } catch {}
+  }
+
+  function sparklineSvg(vals) {
+    if (vals.length < 2) return '';
+    const W = 100, H = 40, PAD = 3;
+    const min = Math.min(...vals), max = Math.max(...vals);
+    const range = max - min || 1;
+    const pts = vals.map((v, i) => [
+      PAD + (i / (vals.length - 1)) * (W - PAD * 2),
+      (H - PAD) - ((v - min) / range) * (H - PAD * 2)
+    ]);
+    const line = pts.map((p, i) => (i === 0 ? `M${p[0].toFixed(1)},${p[1].toFixed(1)}` : `L${p[0].toFixed(1)},${p[1].toFixed(1)}`)).join(' ');
+    const fill = line + ` L${pts[pts.length-1][0].toFixed(1)},${H} L${pts[0][0].toFixed(1)},${H} Z`;
+    const dot = pts[pts.length - 1];
+    const uid = 'g' + Math.random().toString(36).slice(2, 7);
+    return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" class="bm-sparkline" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="${uid}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#1D9E75" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="#1D9E75" stop-opacity="0"/>
+      </linearGradient></defs>
+      <path d="${fill}" fill="url(#${uid})"/>
+      <path d="${line}" stroke="#1D9E75" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="${dot[0].toFixed(1)}" cy="${dot[1].toFixed(1)}" r="2.5" fill="#1D9E75"/>
+    </svg>`;
+  }
+
+  function render() {
+    const grid = document.getElementById('bmGrid');
+    const histEl = document.getElementById('bmHistory');
+    if (!grid) return;
+
+    if (!entries.length) {
+      grid.innerHTML = '<div class="bm-empty">Noch keine Messungen.<br>Tippe „+ Log Measurement" um zu starten.</div>';
+      if (histEl) histEl.hidden = true;
+      return;
+    }
+
+    grid.innerHTML = METRICS.map(m => {
+      const vals = entries.map(e => e[m.id]).filter(v => v != null && v !== '').map(Number);
+      const current = vals[0];
+      const prev = vals[1];
+      let deltaHtml = '';
+      if (current != null && prev != null) {
+        const diff = +(current - prev).toFixed(2);
+        const sign = diff > 0 ? '+' : '';
+        let cls = 'neu';
+        if (diff !== 0 && m.dir != null) cls = (diff * m.dir > 0) ? 'pos' : 'neg';
+        deltaHtml = `<span class="bm-card-delta ${cls}">${sign}${diff.toFixed(1)}</span>`;
+      }
+      const spark = sparklineSvg(vals.slice(0, 8).reverse());
+      return `<div class="bm-card">
+        <div class="bm-card-label">${m.label}</div>
+        <div class="bm-card-value-row">
+          <span class="bm-card-value">${current != null ? Number(current).toFixed(1) : '—'}</span>
+          <span class="bm-card-unit">${current != null ? m.unit : ''}</span>
+          ${deltaHtml}
+        </div>
+        ${spark}
+      </div>`;
+    }).join('');
+
+    if (histEl) {
+      histEl.hidden = false;
+      const rows = entries.slice(0, 5).map((e, i) => {
+        const parts = METRICS.map(m => {
+          const v = e[m.id];
+          return (v != null && v !== '') ? `${m.label}: ${Number(v).toFixed(1)}${m.unit}` : null;
+        }).filter(Boolean);
+        return `<div class="bm-history-row">
+          <span class="bm-history-date">${e.date}</span>
+          <span class="bm-history-values">${parts.join(' · ')}</span>
+          <button class="bm-history-del" data-idx="${i}" aria-label="Löschen">×</button>
+        </div>`;
+      }).join('');
+      histEl.innerHTML = `<div class="bm-history-title">Letzte Einträge</div>${rows}`;
+      histEl.querySelectorAll('.bm-history-del').forEach(btn => {
+        btn.addEventListener('click', () => {
+          entries.splice(Number(btn.dataset.idx), 1);
+          save(); render();
+        });
+      });
+    }
+  }
+
+  function todayStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function openModal() {
+    document.getElementById('bm_date').value = todayStr();
+    METRICS.forEach(m => { const el = document.getElementById('bm_' + m.id); if (el) el.value = ''; });
+    document.getElementById('bmModalBg').classList.add('show');
+  }
+  function closeModal() { document.getElementById('bmModalBg').classList.remove('show'); }
+  function saveEntry() {
+    const date = document.getElementById('bm_date').value;
+    if (!date) return;
+    const entry = { date };
+    METRICS.forEach(m => {
+      const v = parseFloat(document.getElementById('bm_' + m.id)?.value);
+      entry[m.id] = isNaN(v) ? null : v;
+    });
+    entries = entries.filter(e => e.date !== date);
+    entries.unshift(entry);
+    entries.sort((a, b) => b.date.localeCompare(a.date));
+    save(); render(); closeModal();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    load(); render();
+    document.getElementById('bmLogBtn')?.addEventListener('click', openModal);
+    document.getElementById('bmCancel')?.addEventListener('click', closeModal);
+    document.getElementById('bmSave')?.addEventListener('click', saveEntry);
+    document.getElementById('bmModalBg')?.addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+  });
+
+  window.addEventListener('storage', e => { if (e.key === BM_KEY) { load(); render(); } });
+})();
+</script>
+
+<script>
 document.addEventListener('DOMContentLoaded', function () {
   if (typeof initCloudSync !== 'function') return;
   initCloudSync({
     appKey: 'health',
-    syncedKeys: ['stack:items', 'stack:version', 'stack:low', 'po_water_v1'],
+    syncedKeys: ['stack:items', 'stack:version', 'stack:low', 'po_water_v1', 'body_metrics_v1'],
     syncedPrefixes: ['stack:taken:'],
     onApplied: function () { window.dispatchEvent(new Event('storage')); }
   });
