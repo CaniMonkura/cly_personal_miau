@@ -461,6 +461,70 @@ main {
   .stack-search-results { width: 100%; }
 }
 
+/* ── Weight Tracker ── */
+.wt-section { margin-top: 56px; }
+.wt-card {
+  background: var(--bg-card); border-radius: 16px;
+  padding: 20px 20px 16px; border: 1px solid var(--border);
+}
+.wt-stats { display: flex; gap: 28px; margin-bottom: 14px; flex-wrap: wrap; }
+.wt-stat { display: flex; flex-direction: column; gap: 2px; }
+.wt-stat-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-tertiary);
+}
+.wt-stat-value {
+  font-family: var(--font-mono); font-size: 26px; font-weight: 700;
+  color: var(--text-primary); font-variant-numeric: tabular-nums;
+  display: flex; align-items: baseline; gap: 6px;
+}
+.wt-stat-value.sm { font-size: 18px; }
+.wt-stat-unit { font-size: 12px; color: var(--text-tertiary); font-weight: 400; }
+.wt-delta { font-size: 12px; font-family: var(--font-mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+.wt-delta.pos { color: #6BE3A4; }
+.wt-delta.neg { color: #FF6B6B; }
+.wt-delta.neu { color: var(--text-tertiary); }
+.wt-chart-wrap { width: 100%; height: 80px; margin-bottom: 14px; }
+.wt-chart-wrap svg { width: 100%; height: 100%; display: block; }
+.wt-log-row { display: flex; gap: 8px; }
+.wt-log-input {
+  flex: 1; background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 14px; color: var(--text-primary);
+  font-family: var(--font-mono); font-size: 16px; min-width: 0;
+}
+.wt-log-input:focus { outline: none; border-color: var(--accent); }
+.wt-log-btn {
+  padding: 10px 20px; border-radius: 10px;
+  background: var(--accent); border: none; color: #fff;
+  font-family: var(--font); font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: opacity 0.15s; white-space: nowrap;
+}
+.wt-log-btn:hover { opacity: 0.85; }
+.wt-recent { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+.wt-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 8px;
+  background: var(--bg-secondary); border: 1px solid var(--border-soft);
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);
+}
+.wt-chip-date { color: var(--text-tertiary); }
+.wt-chip-del {
+  background: none; border: none; color: var(--text-quaternary);
+  cursor: pointer; font-size: 14px; padding: 0; line-height: 1;
+  transition: color 0.15s;
+}
+.wt-chip-del:hover { color: #FF6B6B; }
+.wt-empty-chart {
+  width: 100%; height: 80px; display: flex; align-items: center; justify-content: center;
+  color: var(--text-tertiary); font-size: 12px; margin-bottom: 14px;
+  background: var(--bg-secondary); border-radius: 10px; border: 1px dashed var(--border);
+}
+@media (max-width: 480px) {
+  .wt-section { margin-top: 40px; }
+  .wt-stat-value { font-size: 22px; }
+  .wt-stat-value.sm { font-size: 16px; }
+}
+
 /* ── Body Metrics ── */
 .bm-section { margin-top: 56px; }
 .bm-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
@@ -625,10 +689,36 @@ main {
     </div>
   </div>
 
+  <section class="wt-section">
+    <div class="section-title">Gewicht</div>
+    <div class="wt-card">
+      <div class="wt-stats">
+        <div class="wt-stat">
+          <div class="wt-stat-label">Aktuell</div>
+          <div class="wt-stat-value" id="wtCurrent">—<span class="wt-stat-unit">kg</span></div>
+        </div>
+        <div class="wt-stat">
+          <div class="wt-stat-label">Gestern</div>
+          <div class="wt-stat-value sm" id="wtDelta">—</div>
+        </div>
+        <div class="wt-stat">
+          <div class="wt-stat-label">Ø 7 Tage</div>
+          <div class="wt-stat-value sm" id="wtAvg7">—<span class="wt-stat-unit">kg</span></div>
+        </div>
+      </div>
+      <div id="wtChartWrap" class="wt-chart-wrap"></div>
+      <div class="wt-log-row">
+        <input type="number" step="0.1" class="wt-log-input" id="wtInput" placeholder="z.B. 80.5" />
+        <button class="wt-log-btn" id="wtLogBtn">Log</button>
+      </div>
+      <div class="wt-recent" id="wtRecent"></div>
+    </div>
+  </section>
+
   <section class="bm-section">
     <div class="bm-header">
-      <div class="section-title">Body Metrics</div>
-      <button class="bm-log-btn" id="bmLogBtn">+ Log Measurement</button>
+      <div class="section-title">Körpermaße</div>
+      <button class="bm-log-btn" id="bmLogBtn">+ Wöchentlich messen</button>
     </div>
     <div id="bmGrid" class="bm-grid"></div>
     <div id="bmHistory" class="bm-history" hidden></div>
@@ -650,10 +740,6 @@ main {
       <div class="bm-form-field full">
         <div class="bm-form-label">Datum</div>
         <input type="date" class="bm-form-input" id="bm_date" />
-      </div>
-      <div class="bm-form-field">
-        <div class="bm-form-label">Gewicht (kg)</div>
-        <input type="number" step="0.1" class="bm-form-input" id="bm_weight" placeholder="—" />
       </div>
       <div class="bm-form-field">
         <div class="bm-form-label">Taille (cm)</div>
@@ -1208,18 +1294,134 @@ main {
 </script>
 
 <script>
+/* ── Weight Tracker ── */
+(function () {
+  'use strict';
+  const WT_KEY = 'body_weight_v1';
+  let wEntries = [];
+
+  function wLoad() {
+    try { wEntries = JSON.parse(localStorage.getItem(WT_KEY)) || []; } catch { wEntries = []; }
+    if (!Array.isArray(wEntries)) wEntries = [];
+    wEntries.sort((a, b) => b.date.localeCompare(a.date));
+  }
+  function wSave() { try { localStorage.setItem(WT_KEY, JSON.stringify(wEntries)); } catch {} }
+
+  function todayStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function chartSvg(entries) {
+    const last30 = entries.slice(0, 30).reverse();
+    if (last30.length < 2) return null;
+    const vals = last30.map(e => e.weight);
+    const W = 400, H = 80, PX = 4, PY = 6;
+    const min = Math.min(...vals) - 0.5, max = Math.max(...vals) + 0.5;
+    const range = max - min || 1;
+    const pts = vals.map((v, i) => [
+      PX + (i / (vals.length - 1)) * (W - PX * 2),
+      (H - PY) - ((v - min) / range) * (H - PY * 2)
+    ]);
+    const line = pts.map((p, i) => (i === 0 ? `M${p[0].toFixed(1)},${p[1].toFixed(1)}` : `L${p[0].toFixed(1)},${p[1].toFixed(1)}`)).join(' ');
+    const fill = line + ` L${pts[pts.length-1][0].toFixed(1)},${H} L${pts[0][0].toFixed(1)},${H} Z`;
+    const dot = pts[pts.length - 1];
+    return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="wGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#1D9E75" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#1D9E75" stop-opacity="0"/>
+      </linearGradient></defs>
+      <path d="${fill}" fill="url(#wGrad)"/>
+      <path d="${line}" stroke="#1D9E75" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="${dot[0].toFixed(1)}" cy="${dot[1].toFixed(1)}" r="3" fill="#1D9E75"/>
+    </svg>`;
+  }
+
+  function wRender() {
+    const curEl  = document.getElementById('wtCurrent');
+    const deltaEl = document.getElementById('wtDelta');
+    const avg7El  = document.getElementById('wtAvg7');
+    const chartEl = document.getElementById('wtChartWrap');
+    const recentEl = document.getElementById('wtRecent');
+    if (!curEl) return;
+
+    if (!wEntries.length) {
+      curEl.innerHTML = '—<span class="wt-stat-unit">kg</span>';
+      deltaEl.innerHTML = '—'; avg7El.innerHTML = '—<span class="wt-stat-unit">kg</span>';
+      if (chartEl) chartEl.innerHTML = '<div class="wt-empty-chart">Noch keine Einträge</div>';
+      if (recentEl) recentEl.innerHTML = '';
+      return;
+    }
+
+    const cur = wEntries[0].weight;
+    const prev = wEntries[1]?.weight;
+    curEl.innerHTML = `${cur.toFixed(1)}<span class="wt-stat-unit">kg</span>`;
+
+    if (prev != null) {
+      const diff = +(cur - prev).toFixed(2);
+      const sign = diff > 0 ? '+' : '';
+      const cls = diff === 0 ? 'neu' : diff < 0 ? 'pos' : 'neg';
+      deltaEl.innerHTML = `<span class="wt-delta ${cls}">${sign}${diff.toFixed(1)} kg</span>`;
+    } else { deltaEl.innerHTML = '—'; }
+
+    const last7 = wEntries.slice(0, 7).map(e => e.weight);
+    const avg7 = last7.reduce((s, v) => s + v, 0) / last7.length;
+    avg7El.innerHTML = `${avg7.toFixed(1)}<span class="wt-stat-unit">kg</span>`;
+
+    if (chartEl) {
+      const svg = chartSvg(wEntries);
+      chartEl.innerHTML = svg || '<div class="wt-empty-chart">Mindestens 2 Einträge für Chart</div>';
+    }
+
+    if (recentEl) {
+      recentEl.innerHTML = wEntries.slice(0, 7).map((e, i) =>
+        `<span class="wt-chip">
+          <span class="wt-chip-date">${e.date.slice(5)}</span>
+          <span>${e.weight.toFixed(1)} kg</span>
+          <button class="wt-chip-del" data-idx="${i}" aria-label="Löschen">×</button>
+        </span>`
+      ).join('');
+      recentEl.querySelectorAll('.wt-chip-del').forEach(btn => {
+        btn.addEventListener('click', () => {
+          wEntries.splice(Number(btn.dataset.idx), 1);
+          wSave(); wRender();
+        });
+      });
+    }
+  }
+
+  function wLog() {
+    const input = document.getElementById('wtInput');
+    const val = parseFloat(input?.value);
+    if (isNaN(val) || val < 20 || val > 300) return;
+    const today = todayStr();
+    wEntries = wEntries.filter(e => e.date !== today);
+    wEntries.unshift({ date: today, weight: val });
+    wEntries.sort((a, b) => b.date.localeCompare(a.date));
+    wSave(); wRender();
+    if (input) input.value = '';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    wLoad(); wRender();
+    document.getElementById('wtLogBtn')?.addEventListener('click', wLog);
+    document.getElementById('wtInput')?.addEventListener('keydown', e => { if (e.key === 'Enter') wLog(); });
+  });
+  window.addEventListener('storage', e => { if (e.key === WT_KEY) { wLoad(); wRender(); } });
+})();
+
+/* ── Body Measurements (weekly) ── */
 (function () {
   'use strict';
   const BM_KEY = 'body_metrics_v1';
   const METRICS = [
-    { id: 'weight', label: 'Gewicht',        unit: 'kg',  dir: null  },
-    { id: 'waist',  label: 'Taille',         unit: 'cm',  dir: -1    },
-    { id: 'hips',   label: 'Hüfte',          unit: 'cm',  dir: null  },
-    { id: 'chest',  label: 'Brust',          unit: 'cm',  dir: 1     },
-    { id: 'thighL', label: 'Oberschenkel L', unit: 'cm',  dir: 1     },
-    { id: 'thighR', label: 'Oberschenkel R', unit: 'cm',  dir: 1     },
-    { id: 'bicepL', label: 'Bizeps L',       unit: 'cm',  dir: 1     },
-    { id: 'bicepR', label: 'Bizeps R',       unit: 'cm',  dir: 1     },
+    { id: 'waist',  label: 'Taille',         unit: 'cm',  dir: -1 },
+    { id: 'hips',   label: 'Hüfte',          unit: 'cm',  dir: null },
+    { id: 'chest',  label: 'Brust',          unit: 'cm',  dir: 1  },
+    { id: 'thighL', label: 'Oberschenkel L', unit: 'cm',  dir: 1  },
+    { id: 'thighR', label: 'Oberschenkel R', unit: 'cm',  dir: 1  },
+    { id: 'bicepL', label: 'Bizeps L',       unit: 'cm',  dir: 1  },
+    { id: 'bicepR', label: 'Bizeps R',       unit: 'cm',  dir: 1  },
   ];
 
   let entries = [];
@@ -1356,7 +1558,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (typeof initCloudSync !== 'function') return;
   initCloudSync({
     appKey: 'health',
-    syncedKeys: ['stack:items', 'stack:version', 'stack:low', 'po_water_v1', 'body_metrics_v1'],
+    syncedKeys: ['stack:items', 'stack:version', 'stack:low', 'po_water_v1', 'body_metrics_v1', 'body_weight_v1'],
     syncedPrefixes: ['stack:taken:'],
     onApplied: function () { window.dispatchEvent(new Event('storage')); }
   });
