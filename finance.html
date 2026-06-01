@@ -1568,6 +1568,146 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 @media (max-width: 600px) {
   .sub-auto-toggle { width: 100%; justify-content: space-between; padding: 12px 14px; }
 }
+
+/* ===== BUDGET TAB ===== */
+.budget-summary {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 10px; margin-bottom: 20px;
+}
+.budget-kpi {
+  background: var(--bg-card); border-radius: 14px;
+  padding: 14px 16px; border: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 3px;
+}
+.budget-kpi-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-tertiary);
+}
+.budget-kpi-value {
+  font-family: var(--font-mono); font-size: 20px; font-weight: 700;
+  color: var(--text-primary); font-variant-numeric: tabular-nums;
+}
+.budget-kpi-value.income { color: #6BE3A4; }
+.budget-kpi-value.expense { color: #FF8A8A; }
+.budget-kpi-value.pos { color: #6BE3A4; }
+.budget-kpi-value.neg { color: #FF8A8A; }
+
+.budget-upcoming {
+  background: var(--bg-card); border-radius: 14px;
+  padding: 14px 16px; border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.budget-upcoming-title {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-tertiary);
+  margin-bottom: 10px;
+}
+.budget-upcoming-list { display: flex; flex-direction: column; gap: 6px; }
+.budget-upcoming-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 9px;
+  background: var(--bg-secondary);
+}
+.budget-upcoming-day {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+  color: var(--text-tertiary); min-width: 32px; text-align: center;
+  background: rgba(255,255,255,0.06); border-radius: 6px; padding: 2px 6px;
+}
+.budget-upcoming-day.soon { color: #FBBF24; background: rgba(251,191,36,0.12); }
+.budget-upcoming-day.today { color: #6BE3A4; background: rgba(107,227,164,0.12); }
+.budget-upcoming-name { flex: 1; font-size: 13px; color: var(--text-secondary); }
+.budget-upcoming-amt {
+  font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.budget-upcoming-amt.out { color: #FF8A8A; }
+.budget-upcoming-amt.in  { color: #6BE3A4; }
+.budget-upcoming-empty {
+  font-size: 12px; color: var(--text-tertiary); text-align: center; padding: 8px;
+}
+
+.budget-group { margin-bottom: 20px; }
+.budget-group-head {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 10px; flex-wrap: wrap;
+}
+.budget-group-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-secondary); flex: 1;
+}
+.budget-group-total {
+  font-family: var(--font-mono); font-size: 13px; font-weight: 700;
+  font-variant-numeric: tabular-nums; color: var(--text-primary);
+}
+.budget-sort-btn {
+  font-size: 11px; padding: 3px 8px; border-radius: 6px;
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  color: var(--text-tertiary); cursor: pointer; font-family: var(--font);
+  transition: color 0.15s;
+}
+.budget-sort-btn:hover { color: var(--text-primary); }
+
+.budget-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; border-radius: 10px;
+  background: var(--bg-secondary); border: 1px solid transparent;
+  margin-bottom: 6px;
+}
+.budget-item-cat {
+  font-size: 10px; padding: 2px 7px; border-radius: 6px;
+  font-weight: 600; letter-spacing: 0.06em; white-space: nowrap;
+  background: rgba(125,211,252,0.12); color: #7DD3FC;
+}
+.budget-item-name { flex: 1; font-size: 13px; color: var(--text-secondary); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.budget-item-day {
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary);
+  white-space: nowrap;
+}
+.budget-item-amt {
+  font-family: var(--font-mono); font-size: 13px; font-weight: 700;
+  font-variant-numeric: tabular-nums; color: var(--text-primary); white-space: nowrap;
+}
+.budget-item-del {
+  background: none; border: none; color: var(--text-quaternary);
+  cursor: pointer; font-size: 16px; padding: 0 2px; line-height: 1;
+  transition: color 0.15s; flex-shrink: 0;
+}
+.budget-item-del:hover { color: var(--danger); }
+.budget-empty-items {
+  font-size: 12px; color: var(--text-tertiary); padding: 12px;
+  text-align: center; background: var(--bg-card); border-radius: 10px;
+  border: 1px dashed var(--border);
+}
+
+.budget-add-form {
+  display: grid; gap: 8px; margin-top: 8px;
+  background: var(--bg-card); border-radius: 12px;
+  padding: 12px; border: 1px solid var(--border);
+}
+.budget-add-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.budget-add-input, .budget-add-select {
+  flex: 1; min-width: 100px;
+  background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: 8px; padding: 9px 11px; color: var(--text-primary);
+  font-family: var(--font); font-size: 13px;
+}
+.budget-add-input:focus, .budget-add-select:focus {
+  outline: none; border-color: var(--accent);
+}
+.budget-add-input.short { flex: 0 0 80px; min-width: unset; }
+.budget-add-btn {
+  padding: 9px 16px; border-radius: 8px;
+  background: var(--accent); border: none; color: #fff;
+  font-family: var(--font); font-size: 13px; font-weight: 600;
+  cursor: pointer; white-space: nowrap; transition: opacity 0.15s;
+}
+.budget-add-btn:hover { opacity: 0.85; }
+
+@media (max-width: 480px) {
+  .budget-summary { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .budget-kpi-value { font-size: 17px; }
+  .budget-add-input, .budget-add-select { min-width: 80px; }
+}
 </style>
 </head>
 <body>
@@ -1866,6 +2006,107 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 </div>
 
+<!-- ===== BUDGET ===== -->
+<div class="section" data-section="budget">
+
+  <!-- Summary KPIs -->
+  <div class="budget-summary">
+    <div class="budget-kpi">
+      <div class="budget-kpi-label">Einnahmen / Mo.</div>
+      <div class="budget-kpi-value income" id="budgetKpiIncome">0 €</div>
+    </div>
+    <div class="budget-kpi">
+      <div class="budget-kpi-label">Fixkosten / Mo.</div>
+      <div class="budget-kpi-value expense" id="budgetKpiFix">0 €</div>
+    </div>
+    <div class="budget-kpi">
+      <div class="budget-kpi-label">Variable / Mo.</div>
+      <div class="budget-kpi-value expense" id="budgetKpiVar">0 €</div>
+    </div>
+    <div class="budget-kpi">
+      <div class="budget-kpi-label">Saldo / Mo.</div>
+      <div class="budget-kpi-value" id="budgetKpiSaldo">0 €</div>
+    </div>
+  </div>
+
+  <!-- Upcoming -->
+  <div class="budget-upcoming">
+    <div class="budget-upcoming-title">⏱ Nächste 14 Tage</div>
+    <div class="budget-upcoming-list" id="budgetUpcoming"></div>
+  </div>
+
+  <!-- Einnahmen -->
+  <div class="budget-group">
+    <div class="budget-group-head">
+      <span class="budget-group-title">💚 Einnahmen</span>
+      <span class="budget-group-total" id="budgetIncomeTotal">0 €</span>
+    </div>
+    <div id="budgetIncomeList"></div>
+    <div class="budget-add-form">
+      <div class="budget-add-row">
+        <input class="budget-add-input" id="incName" placeholder="Quelle (z.B. Gehalt)" />
+        <input class="budget-add-input short" id="incAmt" type="number" step="0.01" placeholder="€" />
+        <button class="budget-add-btn" id="incAddBtn">+ Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fixkosten -->
+  <div class="budget-group">
+    <div class="budget-group-head">
+      <span class="budget-group-title">🔒 Fixkosten</span>
+      <button class="budget-sort-btn" id="fixSortBtn">Sortieren</button>
+      <span class="budget-group-total" id="budgetFixTotal">0 €</span>
+    </div>
+    <div id="budgetFixList"></div>
+    <div class="budget-add-form">
+      <div class="budget-add-row">
+        <input class="budget-add-input" id="fixName" placeholder="Name (z.B. Miete)" />
+        <input class="budget-add-input short" id="fixAmt" type="number" step="0.01" placeholder="€" />
+        <input class="budget-add-input short" id="fixDay" type="number" min="1" max="31" placeholder="Tag" title="Abbuchungstag (1–31)" />
+        <select class="budget-add-select" id="fixCat">
+          <option value="Wohnen">Wohnen</option>
+          <option value="Transport">Transport</option>
+          <option value="Versicherung">Versicherung</option>
+          <option value="Abo">Abo</option>
+          <option value="Gesundheit">Gesundheit</option>
+          <option value="Kommunikation">Kommunikation</option>
+          <option value="Sonstiges">Sonstiges</option>
+        </select>
+        <button class="budget-add-btn" id="fixAddBtn">+ Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Variable Ausgaben -->
+  <div class="budget-group">
+    <div class="budget-group-head">
+      <span class="budget-group-title">📊 Variable Ausgaben</span>
+      <button class="budget-sort-btn" id="varSortBtn">Sortieren</button>
+      <span class="budget-group-total" id="budgetVarTotal">0 €</span>
+    </div>
+    <div id="budgetVarList"></div>
+    <div class="budget-add-form">
+      <div class="budget-add-row">
+        <input class="budget-add-input" id="varName" placeholder="Beschreibung" />
+        <input class="budget-add-input short" id="varAmt" type="number" step="0.01" placeholder="€" />
+        <input class="budget-add-input short" id="varDate" type="date" />
+        <select class="budget-add-select" id="varCat">
+          <option value="Lebensmittel">Lebensmittel</option>
+          <option value="Restaurant">Restaurant</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Transport">Transport</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Gesundheit">Gesundheit</option>
+          <option value="Sonstiges">Sonstiges</option>
+        </select>
+        <button class="budget-add-btn" id="varAddBtn">+ Add</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
 <!-- ===== BOTTOM TAB BAR ===== -->
 <nav class="bottom-tabs" id="bottomTabs" aria-label="Sections">
   <button class="bot-tab active" data-tab="net">
@@ -1883,6 +2124,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   <button class="bot-tab" data-tab="wish">
     <span class="bot-tab-icon">🎯</span>
     <span class="bot-tab-label">Wishlist</span>
+  </button>
+  <button class="bot-tab" data-tab="budget">
+    <span class="bot-tab-icon">💶</span>
+    <span class="bot-tab-label">Budget</span>
   </button>
 </nav>
 
@@ -1933,7 +2178,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
   tabs.forEach(b => b.addEventListener('click', () => setActiveTab(b.dataset.tab)));
   const savedTab = storeGet(TAB_KEY);
-  setActiveTab(savedTab && ['net','subs','incoming','wish'].includes(savedTab) ? savedTab : 'net');
+  setActiveTab(savedTab && ['net','subs','incoming','wish','budget'].includes(savedTab) ? savedTab : 'net');
 
   // ============================================================
   // NET WORTH (copied from the main dashboard, verbatim logic)
@@ -3379,11 +3624,253 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 </script>
 
 <script>
+// ============================================================
+// BUDGET — Einnahmen / Fixkosten / Variable Ausgaben
+// ============================================================
+(function () {
+  'use strict';
+  const BUD_KEY = 'budget_v1';
+
+  function load() {
+    try {
+      const d = JSON.parse(localStorage.getItem(BUD_KEY));
+      if (d && typeof d === 'object') return d;
+    } catch {}
+    return { income: [], fixed: [], variable: [] };
+  }
+  function save(data) {
+    try { localStorage.setItem(BUD_KEY, JSON.stringify(data)); } catch {}
+  }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function fmt(n) { return n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; }
+  function todayStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  // Sort states: 'default' | 'amt-desc' | 'amt-asc' | 'date-asc' | 'name'
+  const sortCycles = {
+    fix: ['default', 'amt-desc', 'amt-asc', 'date-asc', 'name'],
+    var: ['default', 'amt-desc', 'amt-asc', 'date-asc', 'name']
+  };
+  const sortIdx = { fix: 0, var: 0 };
+  const sortLabels = { default: 'Sortieren', 'amt-desc': '↓ Betrag', 'amt-asc': '↑ Betrag', 'date-asc': '📅 Datum', name: 'A–Z' };
+
+  function sorted(items, type) {
+    const mode = sortCycles[type][sortIdx[type]];
+    const arr = [...items];
+    if (mode === 'amt-desc') arr.sort((a, b) => b.amount - a.amount);
+    else if (mode === 'amt-asc') arr.sort((a, b) => a.amount - b.amount);
+    else if (mode === 'date-asc') arr.sort((a, b) => (a.debitDay || a.date || 0) > (b.debitDay || b.date || 0) ? 1 : -1);
+    else if (mode === 'name') arr.sort((a, b) => a.name.localeCompare(b.name));
+    return arr;
+  }
+
+  function renderSummary(data) {
+    const totalIncome = data.income.reduce((s, i) => s + i.amount, 0);
+    const totalFix    = data.fixed.reduce((s, i) => s + i.amount, 0);
+    const totalVar    = data.variable.reduce((s, i) => s + i.amount, 0);
+    const saldo = totalIncome - totalFix - totalVar;
+
+    const set = (id, val, cls) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = fmt(val);
+      if (cls) { el.className = 'budget-kpi-value ' + cls; }
+    };
+    set('budgetKpiIncome', totalIncome, 'income');
+    set('budgetKpiFix', totalFix, 'expense');
+    set('budgetKpiVar', totalVar, 'expense');
+    set('budgetKpiSaldo', saldo, saldo >= 0 ? 'pos' : 'neg');
+    set('budgetIncomeTotal', totalIncome);
+    set('budgetFixTotal', totalFix);
+    set('budgetVarTotal', totalVar);
+  }
+
+  function renderUpcoming(data) {
+    const el = document.getElementById('budgetUpcoming');
+    if (!el) return;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const todayDay = today.getDate();
+    const todayMonth = today.getMonth();
+    const todayYear = today.getFullYear();
+
+    const events = [];
+    // Fixed costs: upcoming by debitDay in this or next month
+    data.fixed.forEach(item => {
+      if (!item.debitDay) return;
+      let d = new Date(todayYear, todayMonth, item.debitDay);
+      if (d < today) d = new Date(todayYear, todayMonth + 1, item.debitDay);
+      const diff = Math.round((d - today) / 86400000);
+      if (diff <= 14) events.push({ date: d, diff, name: item.name, amount: item.amount, type: 'out', day: item.debitDay });
+    });
+    // Income: show on 1st if no specific day, just show once per source
+    data.income.forEach(item => {
+      const d = new Date(todayYear, todayMonth, 1);
+      if (d < today) return;
+      const diff = Math.round((d - today) / 86400000);
+      if (diff <= 14) events.push({ date: d, diff, name: item.name, amount: item.amount, type: 'in', day: 1 });
+    });
+
+    events.sort((a, b) => a.date - b.date);
+
+    if (!events.length) {
+      el.innerHTML = '<div class="budget-upcoming-empty">Keine Abbuchungen in den nächsten 14 Tagen</div>';
+      return;
+    }
+
+    el.innerHTML = events.map(ev => {
+      let dayCls = '';
+      if (ev.diff === 0) dayCls = 'today';
+      else if (ev.diff <= 3) dayCls = 'soon';
+      const dayLabel = ev.diff === 0 ? 'Heute' : ev.diff === 1 ? 'Morgen' : ev.date.getDate() + '.';
+      return `<div class="budget-upcoming-item">
+        <span class="budget-upcoming-day ${dayCls}">${dayLabel}</span>
+        <span class="budget-upcoming-name">${ev.name}</span>
+        <span class="budget-upcoming-amt ${ev.type}">${ev.type === 'out' ? '−' : '+'}${fmt(ev.amount)}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function catColor(cat) {
+    const map = { Wohnen:'#7DD3FC', Transport:'#FBBF24', Versicherung:'#C4B5FD', Abo:'#F9A8D4',
+      Gesundheit:'#6EE7B7', Kommunikation:'#93C5FD', Lebensmittel:'#86EFAC',
+      Restaurant:'#FCD34D', Shopping:'#FDA4AF', Entertainment:'#A5B4FC', Sonstiges:'#B8B6B0' };
+    return map[cat] || '#B8B6B0';
+  }
+
+  function renderList(containerId, items, type) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    if (!items.length) {
+      el.innerHTML = '<div class="budget-empty-items">Noch keine Einträge</div>';
+      return;
+    }
+    el.innerHTML = items.map(item => {
+      const col = catColor(item.category);
+      const catBadge = item.category
+        ? `<span class="budget-item-cat" style="background:${col}22;color:${col}">${item.category}</span>`
+        : '';
+      const dayBadge = item.debitDay
+        ? `<span class="budget-item-day">am ${item.debitDay}.</span>`
+        : item.date
+        ? `<span class="budget-item-day">${item.date.slice(5)}</span>`
+        : '';
+      return `<div class="budget-item">
+        ${catBadge}
+        <span class="budget-item-name">${item.name}</span>
+        ${dayBadge}
+        <span class="budget-item-amt">${fmt(item.amount)}</span>
+        <button class="budget-item-del" data-id="${item.id}" data-type="${type}" aria-label="Löschen">×</button>
+      </div>`;
+    }).join('');
+    // delete handlers
+    el.querySelectorAll('.budget-item-del').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const data = load();
+        const key = btn.dataset.type === 'income' ? 'income' : btn.dataset.type === 'fixed' ? 'fixed' : 'variable';
+        data[key] = data[key].filter(i => i.id !== btn.dataset.id);
+        save(data); render();
+      });
+    });
+  }
+
+  function render() {
+    const data = load();
+    renderSummary(data);
+    renderUpcoming(data);
+    renderList('budgetIncomeList', data.income, 'income');
+    renderList('budgetFixList', sorted(data.fixed, 'fix'), 'fixed');
+    renderList('budgetVarList', sorted(data.variable, 'var'), 'variable');
+    // sync sort button labels
+    const fb = document.getElementById('fixSortBtn');
+    const vb = document.getElementById('varSortBtn');
+    if (fb) fb.textContent = sortLabels[sortCycles.fix[sortIdx.fix]];
+    if (vb) vb.textContent = sortLabels[sortCycles.var[sortIdx.var]];
+  }
+
+  function addIncome() {
+    const name = document.getElementById('incName')?.value.trim();
+    const amount = parseFloat(document.getElementById('incAmt')?.value);
+    if (!name || isNaN(amount) || amount <= 0) return;
+    const data = load();
+    data.income.push({ id: uid(), name, amount });
+    save(data); render();
+    document.getElementById('incName').value = '';
+    document.getElementById('incAmt').value = '';
+  }
+
+  function addFixed() {
+    const name = document.getElementById('fixName')?.value.trim();
+    const amount = parseFloat(document.getElementById('fixAmt')?.value);
+    const debitDay = parseInt(document.getElementById('fixDay')?.value) || null;
+    const category = document.getElementById('fixCat')?.value || 'Sonstiges';
+    if (!name || isNaN(amount) || amount <= 0) return;
+    const data = load();
+    data.fixed.push({ id: uid(), name, amount, category, debitDay });
+    save(data); render();
+    document.getElementById('fixName').value = '';
+    document.getElementById('fixAmt').value = '';
+    document.getElementById('fixDay').value = '';
+  }
+
+  function addVariable() {
+    const name = document.getElementById('varName')?.value.trim();
+    const amount = parseFloat(document.getElementById('varAmt')?.value);
+    const date = document.getElementById('varDate')?.value || todayStr();
+    const category = document.getElementById('varCat')?.value || 'Sonstiges';
+    if (!name || isNaN(amount) || amount <= 0) return;
+    const data = load();
+    data.variable.push({ id: uid(), name, amount, category, date });
+    save(data); render();
+    document.getElementById('varName').value = '';
+    document.getElementById('varAmt').value = '';
+    document.getElementById('varDate').value = '';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // set today as default date for variable
+    const varDate = document.getElementById('varDate');
+    if (varDate) varDate.value = todayStr();
+
+    render();
+
+    document.getElementById('incAddBtn')?.addEventListener('click', addIncome);
+    document.getElementById('fixAddBtn')?.addEventListener('click', addFixed);
+    document.getElementById('varAddBtn')?.addEventListener('click', addVariable);
+
+    // Enter key support
+    ['incName','incAmt'].forEach(id => {
+      document.getElementById(id)?.addEventListener('keydown', e => { if (e.key === 'Enter') addIncome(); });
+    });
+    ['fixName','fixAmt','fixDay'].forEach(id => {
+      document.getElementById(id)?.addEventListener('keydown', e => { if (e.key === 'Enter') addFixed(); });
+    });
+    ['varName','varAmt','varDate'].forEach(id => {
+      document.getElementById(id)?.addEventListener('keydown', e => { if (e.key === 'Enter') addVariable(); });
+    });
+
+    // Sort buttons
+    document.getElementById('fixSortBtn')?.addEventListener('click', () => {
+      sortIdx.fix = (sortIdx.fix + 1) % sortCycles.fix.length;
+      render();
+    });
+    document.getElementById('varSortBtn')?.addEventListener('click', () => {
+      sortIdx.var = (sortIdx.var + 1) % sortCycles.var.length;
+      render();
+    });
+  });
+
+  window.addEventListener('storage', e => { if (e.key === BUD_KEY) render(); });
+})();
+</script>
+
+<script>
 document.addEventListener('DOMContentLoaded', function () {
   if (typeof initCloudSync !== 'function') return;
   initCloudSync({
     appKey: 'finance',
-    syncedKeys: ['subs', 'wishlist', 'incoming_orders', 'nw_currency', 'nw:activity', 'nw:history'],
+    syncedKeys: ['subs', 'wishlist', 'incoming_orders', 'nw_currency', 'nw:activity', 'nw:history', 'budget_v1'],
     syncedPrefixes: ['nw:'],
     onApplied: function () { window.dispatchEvent(new Event('storage')); }
   });
