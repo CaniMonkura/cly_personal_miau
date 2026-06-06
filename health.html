@@ -637,6 +637,44 @@ main {
   .bm-modal { padding: 20px; }
 }
 
+/* ── Routine Checklists ── */
+.routine-section { margin-top: 56px; }
+.routine-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.routine-card { background: var(--bg-card); border-radius: 14px; padding: 14px 16px; border: 1px solid var(--border); }
+.routine-card-title { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.routine-item { display: flex; align-items: center; gap: 9px; padding: 7px 4px; cursor: pointer; border-radius: 7px; transition: background 0.1s; -webkit-tap-highlight-color: transparent; }
+.routine-item:hover { background: rgba(255,255,255,0.03); }
+.routine-cb { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; transition: all 0.15s; }
+.routine-item.done .routine-cb { background: var(--accent); border-color: var(--accent); color: #fff; }
+.routine-item-text { font-size: 12px; color: var(--text-secondary); line-height: 1.3; }
+.routine-item.done .routine-item-text { color: var(--text-primary); }
+.routine-progress { margin-top: 10px; height: 3px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; }
+.routine-progress-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.3s; }
+@media (max-width: 480px) { .routine-grid { grid-template-columns: 1fr; } .routine-section { margin-top: 40px; } }
+
+/* ── Peptide Tracker ── */
+.pep-section { margin-top: 56px; }
+.pep-grid { display: flex; flex-direction: column; gap: 10px; }
+.pep-card { background: var(--bg-card); border-radius: 14px; padding: 14px 16px; border: 1px solid var(--border); display: flex; align-items: center; gap: 14px; }
+.pep-icon { font-size: 22px; flex-shrink: 0; }
+.pep-info { flex: 1; min-width: 0; }
+.pep-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.pep-dose { font-size: 11px; color: var(--text-tertiary); margin-top: 1px; }
+.pep-status { font-size: 11px; font-family: var(--font-mono); margin-top: 4px; font-weight: 600; }
+.pep-status.ok { color: #6BE3A4; }
+.pep-status.warn { color: #FBBF24; }
+.pep-status.due { color: #FF6B6B; }
+.pep-progress { display: flex; gap: 4px; margin-top: 6px; }
+.pep-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.1); }
+.pep-dot.done { background: var(--accent); }
+.pep-action { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; flex-shrink: 0; }
+.pep-log-btn { padding: 7px 14px; border-radius: 8px; background: var(--accent); border: none; color: #fff; font-family: var(--font); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: opacity 0.15s; }
+.pep-log-btn:hover { opacity: 0.85; }
+.pep-log-btn.secondary { background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-secondary); }
+.pep-undo { font-size: 10px; color: var(--text-quaternary); background: none; border: none; cursor: pointer; padding: 0; font-family: var(--font); }
+.pep-undo:hover { color: var(--text-tertiary); }
+@media (max-width: 480px) { .pep-section { margin-top: 40px; } .pep-card { flex-wrap: wrap; } }
+
 ::selection { background: rgba(224, 118, 88, 0.3); color: var(--text-primary); }
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -688,6 +726,29 @@ main {
       </div>
     </div>
   </div>
+
+  <!-- Routines -->
+  <section class="routine-section">
+    <div class="section-title">Tägliche Routinen</div>
+    <div class="routine-grid">
+      <div class="routine-card">
+        <div class="routine-card-title">🌅 Morgen</div>
+        <div id="morningList"></div>
+        <div class="routine-progress"><div class="routine-progress-fill" id="morningBar" style="width:0%"></div></div>
+      </div>
+      <div class="routine-card">
+        <div class="routine-card-title">🌙 Abend</div>
+        <div id="eveningList"></div>
+        <div class="routine-progress"><div class="routine-progress-fill" id="eveningBar" style="width:0%"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Peptide Tracker -->
+  <section class="pep-section">
+    <div class="section-title">Peptide & Protokoll</div>
+    <div class="pep-grid" id="pepGrid"></div>
+  </section>
 
   <section class="wt-section">
     <div class="section-title">Gewicht</div>
@@ -1554,11 +1615,190 @@ main {
 </script>
 
 <script>
+/* ── Routine Checklists ── */
+(function () {
+  'use strict';
+  const RK = 'routine_v1';
+
+  const MORNING = [
+    { id: 'wake',    text: '07:00 aufgestanden' },
+    { id: 'sub',     text: 'Subliminals gehört' },
+    { id: 'coffee',  text: 'Bulletproof Kaffee' },
+    { id: 'stretch', text: '5 Min Stretching' },
+    { id: 'walk',    text: 'Gassi mit Gewichtsweste' },
+    { id: 'oil',     text: 'Babyöl + Weleda Bauch' },
+    { id: 'weight',  text: 'Gewicht getrackt' },
+  ];
+  const EVENING = [
+    { id: 'screen',  text: '21:00 Bildschirm aus' },
+    { id: 'glasses', text: 'Rotlichtbrille auf' },
+    { id: 'sleep',   text: 'ESN Sleep + Melatonin' },
+    { id: 'ashwa',   text: 'Ashwagandha' },
+    { id: 'subs2',   text: 'Subliminals' },
+    { id: 'read',    text: 'Lesen auf Kindle' },
+    { id: 'alarm',   text: 'Wecker gestellt' },
+  ];
+
+  function todayStr() {
+    const d = new Date();
+    if (d.getHours() < 6) d.setDate(d.getDate() - 1);
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function load() { try { return JSON.parse(localStorage.getItem(RK)) || {}; } catch { return {}; } }
+  function save(d) { try { localStorage.setItem(RK, JSON.stringify(d)); } catch {} }
+
+  function buildList(containerId, barId, items, period) {
+    const el = document.getElementById(containerId);
+    const bar = document.getElementById(barId);
+    if (!el) return;
+    const data = load();
+    const today = todayStr();
+    const state = (data[today] || {})[period] || {};
+    let done = 0;
+    el.innerHTML = items.map(item => {
+      const checked = !!state[item.id];
+      if (checked) done++;
+      return `<div class="routine-item${checked ? ' done' : ''}" data-period="${period}" data-id="${item.id}">
+        <div class="routine-cb">${checked ? '✓' : ''}</div>
+        <div class="routine-item-text">${item.text}</div>
+      </div>`;
+    }).join('');
+    if (bar) bar.style.width = (done / items.length * 100).toFixed(0) + '%';
+    el.querySelectorAll('.routine-item').forEach(row => {
+      row.addEventListener('click', () => {
+        const d = load();
+        const t = todayStr();
+        if (!d[t]) d[t] = {};
+        if (!d[t][row.dataset.period]) d[t][row.dataset.period] = {};
+        d[t][row.dataset.period][row.dataset.id] = !d[t][row.dataset.period][row.dataset.id];
+        save(d);
+        buildList(containerId, barId, items, period);
+      });
+    });
+  }
+
+  function render() {
+    buildList('morningList', 'morningBar', MORNING, 'morning');
+    buildList('eveningList', 'eveningBar', EVENING, 'evening');
+  }
+
+  document.addEventListener('DOMContentLoaded', render);
+  window.addEventListener('storage', e => { if (e.key === RK) render(); });
+})();
+
+/* ── Peptide Tracker ── */
+(function () {
+  'use strict';
+  const PK = 'peptides_v1';
+
+  // config
+  const PEPTIDES = [
+    { id: 'reta',  name: 'Retatrutide', dose: '6 mg wöchentlich',     icon: '💉', type: 'weekly',   target: 1 },
+    { id: 'motsc', name: 'MOTS-c',      dose: '1 mg · 5×/Woche',      icon: '💉', type: 'weekly5',  target: 5 },
+    { id: 'ghkcu', name: 'GHK-Cu',      dose: '2–3 mg täglich',       icon: '💉', type: 'daily',    target: 1 },
+  ];
+
+  function todayStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function weekStart() {
+    const d = new Date(); d.setHours(0,0,0,0);
+    const day = d.getDay(); // 0=Sun
+    d.setDate(d.getDate() - (day === 0 ? 6 : day - 1)); // Mon
+    return d.toISOString().slice(0,10);
+  }
+  function load() { try { return JSON.parse(localStorage.getItem(PK)) || {}; } catch { return {}; } }
+  function save(d) { try { localStorage.setItem(PK, JSON.stringify(d)); } catch {} }
+
+  function daysSince(dateStr) {
+    if (!dateStr) return null;
+    const diff = new Date() - new Date(dateStr + 'T12:00:00');
+    return Math.floor(diff / 86400000);
+  }
+
+  function render() {
+    const grid = document.getElementById('pepGrid');
+    if (!grid) return;
+    const data = load();
+    const today = todayStr();
+    const wk = weekStart();
+
+    grid.innerHTML = PEPTIDES.map(p => {
+      const state = data[p.id] || {};
+
+      let statusText = '', statusCls = '', dotsHtml = '', btnLabel = 'Jetzt injiziert';
+      let canLog = true;
+
+      if (p.type === 'daily') {
+        const done = !!state[today];
+        statusText = done ? '✓ Heute erledigt' : '○ Noch nicht heute';
+        statusCls = done ? 'ok' : 'warn';
+        canLog = !done;
+        dotsHtml = ''; // no dots for daily
+      } else if (p.type === 'weekly') {
+        const lastDate = state.lastDate;
+        const days = daysSince(lastDate);
+        if (days === null) { statusText = 'Noch nie geloggt'; statusCls = 'due'; }
+        else if (days === 0) { statusText = '✓ Heute injiziert'; statusCls = 'ok'; canLog = false; }
+        else if (days <= 7) { statusText = 'vor ' + days + ' Tag' + (days === 1 ? '' : 'en'); statusCls = days <= 6 ? 'ok' : 'warn'; }
+        else { statusText = '⚠ Überfällig seit ' + days + ' Tagen'; statusCls = 'due'; }
+      } else if (p.type === 'weekly5') {
+        const weekDates = state[wk] || [];
+        const count = weekDates.length;
+        canLog = count < 5 && !weekDates.includes(today);
+        statusText = count + '/5 diese Woche';
+        statusCls = count >= 5 ? 'ok' : count >= 3 ? 'warn' : 'due';
+        dotsHtml = `<div class="pep-progress">${Array(5).fill(0).map((_,i) =>
+          `<div class="pep-dot${i < count ? ' done' : ''}"></div>`).join('')}</div>`;
+      }
+
+      return `<div class="pep-card">
+        <div class="pep-icon">${p.icon}</div>
+        <div class="pep-info">
+          <div class="pep-name">${p.name}</div>
+          <div class="pep-dose">${p.dose}</div>
+          <div class="pep-status ${statusCls}">${statusText}</div>
+          ${dotsHtml}
+        </div>
+        <div class="pep-action">
+          <button class="pep-log-btn${canLog ? '' : ' secondary'}" data-id="${p.id}" ${canLog ? '' : 'disabled'}>
+            ${canLog ? 'Injiziert ✓' : 'Erledigt'}
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+
+    grid.querySelectorAll('.pep-log-btn:not([disabled])').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pId = btn.dataset.id;
+        const p = PEPTIDES.find(x => x.id === pId);
+        const data = load();
+        if (!data[pId]) data[pId] = {};
+        if (p.type === 'daily') {
+          data[pId][today] = true;
+        } else if (p.type === 'weekly') {
+          data[pId].lastDate = today;
+        } else if (p.type === 'weekly5') {
+          if (!data[pId][wk]) data[pId][wk] = [];
+          if (!data[pId][wk].includes(today)) data[pId][wk].push(today);
+        }
+        save(data); render();
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', render);
+  window.addEventListener('storage', e => { if (e.key === PK) render(); });
+})();
+</script>
+
+<script>
 document.addEventListener('DOMContentLoaded', function () {
   if (typeof initCloudSync !== 'function') return;
   initCloudSync({
     appKey: 'health',
-    syncedKeys: ['stack:items', 'stack:version', 'stack:low', 'po_water_v1', 'body_metrics_v1', 'body_weight_v1'],
+    syncedKeys: ['stack:items', 'stack:version', 'stack:low', 'po_water_v1', 'body_metrics_v1', 'body_weight_v1', 'routine_v1', 'peptides_v1', 'nonneg_v1'],
     syncedPrefixes: ['stack:taken:'],
     onApplied: function () { window.dispatchEvent(new Event('storage')); }
   });
