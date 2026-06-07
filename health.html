@@ -654,26 +654,55 @@ main {
 
 /* ── Peptide Tracker ── */
 .pep-section { margin-top: 56px; }
-.pep-grid { display: flex; flex-direction: column; gap: 10px; }
-.pep-card { background: var(--bg-card); border-radius: 14px; padding: 14px 16px; border: 1px solid var(--border); display: flex; align-items: center; gap: 14px; }
-.pep-icon { font-size: 22px; flex-shrink: 0; }
+.pep-grid { display: flex; flex-direction: column; gap: 12px; }
+.pep-card {
+  background: var(--bg-card); border-radius: 14px;
+  padding: 16px 16px 12px; border: 1px solid var(--border);
+}
+.pep-top { display: flex; align-items: flex-start; gap: 12px; }
+.pep-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
 .pep-info { flex: 1; min-width: 0; }
 .pep-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-.pep-dose { font-size: 11px; color: var(--text-tertiary); margin-top: 1px; }
-.pep-status { font-size: 11px; font-family: var(--font-mono); margin-top: 4px; font-weight: 600; }
-.pep-status.ok { color: #6BE3A4; }
+.pep-dose { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; font-family: var(--font-mono); }
+.pep-status { font-size: 11px; font-family: var(--font-mono); margin-top: 5px; font-weight: 600; }
+.pep-status.ok   { color: #6BE3A4; }
 .pep-status.warn { color: #FBBF24; }
-.pep-status.due { color: #FF6B6B; }
-.pep-progress { display: flex; gap: 4px; margin-top: 6px; }
-.pep-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.1); }
-.pep-dot.done { background: var(--accent); }
-.pep-action { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; flex-shrink: 0; }
-.pep-log-btn { padding: 7px 14px; border-radius: 8px; background: var(--accent); border: none; color: #fff; font-family: var(--font); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: opacity 0.15s; }
+.pep-status.due  { color: #FF6B6B; }
+.pep-next { font-size: 10px; color: var(--text-tertiary); margin-top: 2px; font-family: var(--font-mono); }
+.pep-log-btn {
+  padding: 8px 14px; border-radius: 8px; background: var(--accent);
+  border: none; color: #fff; font-family: var(--font); font-size: 12px;
+  font-weight: 600; cursor: pointer; white-space: nowrap;
+  transition: opacity 0.15s; flex-shrink: 0;
+}
 .pep-log-btn:hover { opacity: 0.85; }
-.pep-log-btn.secondary { background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-secondary); }
-.pep-undo { font-size: 10px; color: var(--text-quaternary); background: none; border: none; cursor: pointer; padding: 0; font-family: var(--font); }
-.pep-undo:hover { color: var(--text-tertiary); }
-@media (max-width: 480px) { .pep-section { margin-top: 40px; } .pep-card { flex-wrap: wrap; } }
+.pep-log-btn.done-btn {
+  background: rgba(107,227,164,0.1); border: 1px solid rgba(107,227,164,0.2);
+  color: #6BE3A4; cursor: default;
+}
+.pep-bottom { margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
+.pep-history-label { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-quaternary); margin-bottom: 6px; }
+.pep-dots { display: flex; gap: 5px; flex-wrap: wrap; }
+.pep-dot {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  font-size: 9px; font-family: var(--font-mono); color: var(--text-quaternary);
+}
+.pep-dot-circle {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+}
+.pep-dot.done .pep-dot-circle { background: var(--accent); }
+.pep-dot.today .pep-dot-circle { background: var(--accent); box-shadow: 0 0 6px rgba(29,158,117,0.6); }
+.pep-history-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.pep-chip {
+  font-size: 10px; font-family: var(--font-mono);
+  padding: 3px 8px; border-radius: 6px;
+  background: rgba(29,158,117,0.12); color: #6BE3A4; border: 1px solid rgba(29,158,117,0.2);
+}
+.pep-chip.old { background: rgba(255,255,255,0.04); color: var(--text-tertiary); border-color: transparent; }
+.pep-undo-btn { font-size: 10px; color: var(--text-quaternary); background: none; border: none; cursor: pointer; padding: 0 0 0 8px; font-family: var(--font); }
+.pep-undo-btn:hover { color: var(--text-tertiary); }
+@media (max-width: 480px) { .pep-section { margin-top: 40px; } }
 
 ::selection { background: rgba(224, 118, 88, 0.3); color: var(--text-primary); }
 ::-webkit-scrollbar { width: 10px; }
@@ -1691,30 +1720,55 @@ main {
   'use strict';
   const PK = 'peptides_v1';
 
-  // config
   const PEPTIDES = [
-    { id: 'reta',  name: 'Retatrutide', dose: '6 mg wöchentlich',     icon: '💉', type: 'weekly',   target: 1 },
-    { id: 'motsc', name: 'MOTS-c',      dose: '1 mg · 5×/Woche',      icon: '💉', type: 'weekly5',  target: 5 },
-    { id: 'ghkcu', name: 'GHK-Cu',      dose: '2–3 mg täglich',       icon: '💉', type: 'daily',    target: 1 },
+    { id: 'reta',  name: 'Retatrutide', dose: '6 mg · 1×/Woche',    icon: '💉', type: 'weekly',  intervalDays: 7  },
+    { id: 'motsc', name: 'MOTS-c',      dose: '1 mg · 5×/Woche',    icon: '💉', type: 'weekly5', intervalDays: null },
+    { id: 'ghkcu', name: 'GHK-Cu',      dose: '2–3 mg · täglich',   icon: '💉', type: 'daily',   intervalDays: 1  },
   ];
 
   function todayStr() {
     const d = new Date();
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
   }
-  function weekStart() {
-    const d = new Date(); d.setHours(0,0,0,0);
-    const day = d.getDay(); // 0=Sun
-    d.setDate(d.getDate() - (day === 0 ? 6 : day - 1)); // Mon
+  function dateLabel(str) {
+    if (!str) return '—';
+    const [y, m, d] = str.split('-');
+    return d + '.' + m + '.';
+  }
+  function daysSince(dateStr) {
+    if (!dateStr) return null;
+    return Math.floor((new Date() - new Date(dateStr + 'T12:00:00')) / 86400000);
+  }
+  function addDays(dateStr, n) {
+    const d = new Date(dateStr + 'T12:00:00');
+    d.setDate(d.getDate() + n);
     return d.toISOString().slice(0,10);
   }
+  function getWeekDates() {
+    // Mon–Sun of current week
+    const d = new Date(); d.setHours(0,0,0,0);
+    const day = d.getDay();
+    const mon = new Date(d); mon.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+    return Array(7).fill(0).map((_, i) => {
+      const x = new Date(mon); x.setDate(mon.getDate() + i);
+      return x.toISOString().slice(0,10);
+    });
+  }
+  function getLast7Days() {
+    return Array(7).fill(0).map((_, i) => {
+      const d = new Date(); d.setDate(d.getDate() - (6 - i));
+      return d.toISOString().slice(0,10);
+    });
+  }
+  const DAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+
   function load() { try { return JSON.parse(localStorage.getItem(PK)) || {}; } catch { return {}; } }
   function save(d) { try { localStorage.setItem(PK, JSON.stringify(d)); } catch {} }
 
-  function daysSince(dateStr) {
-    if (!dateStr) return null;
-    const diff = new Date() - new Date(dateStr + 'T12:00:00');
-    return Math.floor(diff / 86400000);
+  // state[pepId].dates = sorted array of injection date strings (newest first)
+  function getDates(state, id) {
+    const arr = (state[id] || {}).dates || [];
+    return arr.slice().sort().reverse(); // newest first
   }
 
   function render() {
@@ -1722,66 +1776,116 @@ main {
     if (!grid) return;
     const data = load();
     const today = todayStr();
-    const wk = weekStart();
 
     grid.innerHTML = PEPTIDES.map(p => {
-      const state = data[p.id] || {};
-
-      let statusText = '', statusCls = '', dotsHtml = '', btnLabel = 'Jetzt injiziert';
-      let canLog = true;
+      const dates = getDates(data, p.id);
+      const last = dates[0] || null;
+      let statusText = '', statusCls = '', bottomHtml = '', canLog = true;
 
       if (p.type === 'daily') {
-        const done = !!state[today];
-        statusText = done ? '✓ Heute erledigt' : '○ Noch nicht heute';
-        statusCls = done ? 'ok' : 'warn';
+        const done = dates.includes(today);
         canLog = !done;
-        dotsHtml = ''; // no dots for daily
+        statusText = done ? '✓ Heute injiziert' : '○ Noch nicht heute';
+        statusCls = done ? 'ok' : 'warn';
+
+        // Last 7 days dots
+        const last7 = getLast7Days();
+        const dotsHtml = last7.map((d, i) => {
+          const isDone = dates.includes(d);
+          const isToday = d === today;
+          const label = DAY_LABELS[i]; // 0=Mo
+          return `<div class="pep-dot${isDone ? (isToday ? ' today' : ' done') : ''}">
+            <div class="pep-dot-circle"></div>
+            <span>${label}</span>
+          </div>`;
+        }).join('');
+
+        const recentDates = dates.slice(0, 5);
+        const chipsHtml = recentDates.map((d, i) =>
+          `<span class="pep-chip${i > 0 ? ' old' : ''}">${dateLabel(d)}${i === 0 ? ' ✓' : ''}</span>`
+        ).join('');
+
+        bottomHtml = `
+          <div class="pep-history-label">Letzte 7 Tage</div>
+          <div class="pep-dots">${dotsHtml}</div>
+          ${recentDates.length ? `<div class="pep-history-chips" style="margin-top:8px">${chipsHtml}</div>` : ''}`;
+
       } else if (p.type === 'weekly') {
-        const lastDate = state.lastDate;
-        const days = daysSince(lastDate);
+        const days = daysSince(last);
         if (days === null) { statusText = 'Noch nie geloggt'; statusCls = 'due'; }
         else if (days === 0) { statusText = '✓ Heute injiziert'; statusCls = 'ok'; canLog = false; }
-        else if (days <= 7) { statusText = 'vor ' + days + ' Tag' + (days === 1 ? '' : 'en'); statusCls = days <= 6 ? 'ok' : 'warn'; }
-        else { statusText = '⚠ Überfällig seit ' + days + ' Tagen'; statusCls = 'due'; }
+        else if (days <= 6) { statusText = 'vor ' + days + ' Tag' + (days === 1 ? '' : 'en') + ' · ' + dateLabel(last); statusCls = 'ok'; }
+        else if (days === 7) { statusText = '⏰ Fällig heute — ' + dateLabel(last); statusCls = 'warn'; }
+        else { statusText = '⚠ Überfällig — zuletzt ' + dateLabel(last); statusCls = 'due'; }
+
+        const nextDue = last ? addDays(last, 7) : null;
+        const nextHtml = nextDue && days > 0 ? `<div class="pep-next">Nächste: ${dateLabel(nextDue)}</div>` : '';
+
+        const chipsHtml = dates.slice(0, 6).map((d, i) =>
+          `<span class="pep-chip${i > 0 ? ' old' : ''}">${dateLabel(d)}${i === 0 ? ' ✓' : ''}</span>`
+        ).join('');
+
+        bottomHtml = `
+          ${nextHtml}
+          <div class="pep-history-label" style="margin-top:${nextDue ? 6 : 0}px">Injektionsverlauf</div>
+          <div class="pep-history-chips">${chipsHtml || '<span style="font-size:11px;color:var(--text-quaternary)">Noch keine Einträge</span>'}</div>`;
+
       } else if (p.type === 'weekly5') {
-        const weekDates = state[wk] || [];
-        const count = weekDates.length;
-        canLog = count < 5 && !weekDates.includes(today);
+        const weekDates = getWeekDates(); // Mo–So
+        const thisDone = weekDates.filter(d => dates.includes(d));
+        const count = thisDone.length;
+        canLog = count < 5 && !dates.includes(today);
         statusText = count + '/5 diese Woche';
         statusCls = count >= 5 ? 'ok' : count >= 3 ? 'warn' : 'due';
-        dotsHtml = `<div class="pep-progress">${Array(5).fill(0).map((_,i) =>
-          `<div class="pep-dot${i < count ? ' done' : ''}"></div>`).join('')}</div>`;
+
+        // Weekday dots (Mo=0 to So=6, only show Mo–Fr = first 5)
+        const dotsHtml = weekDates.slice(0, 5).map((d, i) => {
+          const isDone = dates.includes(d);
+          const isToday = d === today;
+          return `<div class="pep-dot${isDone ? (isToday ? ' today' : ' done') : ''}">
+            <div class="pep-dot-circle"></div>
+            <span>${DAY_LABELS[i]}</span>
+          </div>`;
+        }).join('');
+
+        const chipsHtml = dates.slice(0, 8).map((d, i) =>
+          `<span class="pep-chip${i > 0 ? ' old' : ''}">${dateLabel(d)}${i === 0 ? ' ✓' : ''}</span>`
+        ).join('');
+
+        bottomHtml = `
+          <div class="pep-history-label">Diese Woche (Mo–Fr)</div>
+          <div class="pep-dots">${dotsHtml}</div>
+          ${dates.length ? `<div class="pep-history-chips" style="margin-top:8px">${chipsHtml}</div>` : ''}`;
       }
 
       return `<div class="pep-card">
-        <div class="pep-icon">${p.icon}</div>
-        <div class="pep-info">
-          <div class="pep-name">${p.name}</div>
-          <div class="pep-dose">${p.dose}</div>
-          <div class="pep-status ${statusCls}">${statusText}</div>
-          ${dotsHtml}
-        </div>
-        <div class="pep-action">
-          <button class="pep-log-btn${canLog ? '' : ' secondary'}" data-id="${p.id}" ${canLog ? '' : 'disabled'}>
-            ${canLog ? 'Injiziert ✓' : 'Erledigt'}
+        <div class="pep-top">
+          <div class="pep-icon">${p.icon}</div>
+          <div class="pep-info">
+            <div class="pep-name">${p.name}</div>
+            <div class="pep-dose">${p.dose}</div>
+            <div class="pep-status ${statusCls}">${statusText}</div>
+          </div>
+          <button class="pep-log-btn${canLog ? '' : ' done-btn'}" data-id="${p.id}" ${canLog ? '' : 'disabled'}>
+            ${canLog ? 'Injiziert ✓' : '✓ Done'}
           </button>
+        </div>
+        <div class="pep-bottom">
+          <div class="pep-history-label">Verlauf</div>
+          ${bottomHtml}
         </div>
       </div>`;
     }).join('');
 
     grid.querySelectorAll('.pep-log-btn:not([disabled])').forEach(btn => {
       btn.addEventListener('click', () => {
-        const pId = btn.dataset.id;
-        const p = PEPTIDES.find(x => x.id === pId);
         const data = load();
-        if (!data[pId]) data[pId] = {};
-        if (p.type === 'daily') {
-          data[pId][today] = true;
-        } else if (p.type === 'weekly') {
-          data[pId].lastDate = today;
-        } else if (p.type === 'weekly5') {
-          if (!data[pId][wk]) data[pId][wk] = [];
-          if (!data[pId][wk].includes(today)) data[pId][wk].push(today);
+        const id = btn.dataset.id;
+        if (!data[id]) data[id] = { dates: [] };
+        if (!data[id].dates) data[id].dates = [];
+        if (!data[id].dates.includes(today)) {
+          data[id].dates.unshift(today);
+          data[id].dates = data[id].dates.sort().reverse(); // newest first
         }
         save(data); render();
       });
