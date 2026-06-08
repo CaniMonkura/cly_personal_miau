@@ -637,6 +637,29 @@ main {
   .bm-modal { padding: 20px; }
 }
 
+/* ── Modafinil Tracker ── */
+.moda-section { margin-top: 56px; }
+.moda-card { background: var(--bg-card); border-radius: 14px; padding: 16px; border: 1px solid var(--border); }
+.moda-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.moda-icon { font-size: 22px; }
+.moda-info { flex: 1; }
+.moda-name { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+.moda-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+.moda-log-btn { padding: 8px 16px; border-radius: 9px; background: var(--accent); border: none; color: #fff; font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; white-space: nowrap; }
+.moda-log-btn:hover { opacity: 0.85; }
+.moda-log-btn.done-btn { background: rgba(196,181,253,0.12); border: 1px solid rgba(196,181,253,0.25); color: #C4B5FD; cursor: default; }
+.moda-stats { display: flex; gap: 20px; margin-bottom: 12px; }
+.moda-stat { display: flex; flex-direction: column; gap: 2px; }
+.moda-stat-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-tertiary); }
+.moda-stat-val { font-family: var(--font-mono); font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.moda-stat-val.ok { color: #6BE3A4; } .moda-stat-val.warn { color: #FBBF24; }
+.moda-dots { display: flex; gap: 5px; }
+.moda-dot { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 9px; font-family: var(--font-mono); color: var(--text-quaternary); }
+.moda-dot-circle { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.08); }
+.moda-dot.done .moda-dot-circle { background: #C4B5FD; }
+.moda-dot.today .moda-dot-circle { background: #C4B5FD; box-shadow: 0 0 6px rgba(196,181,253,0.6); }
+@media (max-width: 480px) { .moda-section { margin-top: 40px; } }
+
 /* ── Routine Checklists ── */
 .routine-section { margin-top: 56px; }
 .routine-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -755,6 +778,36 @@ main {
       </div>
     </div>
   </div>
+
+  <!-- Modafinil -->
+  <section class="moda-section">
+    <div class="section-title">Modafinil</div>
+    <div class="moda-card">
+      <div class="moda-top">
+        <div class="moda-icon">🧠</div>
+        <div class="moda-info">
+          <div class="moda-name">Modafinil</div>
+          <div class="moda-sub">2–3×/Woche · Deep Work Sessions</div>
+        </div>
+        <button class="moda-log-btn" id="modaLogBtn">Genommen ✓</button>
+      </div>
+      <div class="moda-stats">
+        <div class="moda-stat">
+          <div class="moda-stat-label">Diese Woche</div>
+          <div class="moda-stat-val" id="modaWeekCount">0/3</div>
+        </div>
+        <div class="moda-stat">
+          <div class="moda-stat-label">Heute</div>
+          <div class="moda-stat-val" id="modaToday">—</div>
+        </div>
+        <div class="moda-stat">
+          <div class="moda-stat-label">Gesamt</div>
+          <div class="moda-stat-val" id="modaTotal">0</div>
+        </div>
+      </div>
+      <div class="moda-dots" id="modaDots"></div>
+    </div>
+  </section>
 
   <!-- Routines -->
   <section class="routine-section">
@@ -1644,6 +1697,91 @@ main {
 </script>
 
 <script>
+/* ── Modafinil Tracker ── */
+(function () {
+  'use strict';
+  const MK = 'modafinil_v1';
+  const DAY_LABELS = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+
+  function todayStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function getLast7() {
+    return Array(7).fill(0).map((_,i) => {
+      const d = new Date(); d.setDate(d.getDate() - (6-i));
+      return d.toISOString().slice(0,10);
+    });
+  }
+  function getWeekDates() {
+    const d = new Date(); d.setHours(0,0,0,0);
+    const day = d.getDay();
+    const mon = new Date(d); mon.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+    return Array(7).fill(0).map((_,i) => { const x = new Date(mon); x.setDate(mon.getDate()+i); return x.toISOString().slice(0,10); });
+  }
+  function load() { try { return JSON.parse(localStorage.getItem(MK)) || { dates: [] }; } catch { return { dates: [] }; } }
+  function save(d) { try { localStorage.setItem(MK, JSON.stringify(d)); } catch {} }
+
+  function render() {
+    const data = load();
+    const dates = data.dates || [];
+    const today = todayStr();
+    const doneToday = dates.includes(today);
+
+    const btn = document.getElementById('modaLogBtn');
+    if (btn) {
+      btn.className = 'moda-log-btn' + (doneToday ? ' done-btn' : '');
+      btn.textContent = doneToday ? '✓ Heute genommen' : 'Genommen ✓';
+      btn.disabled = doneToday;
+    }
+
+    // This week count
+    const weekDates = getWeekDates();
+    const weekCount = weekDates.filter(d => dates.includes(d)).length;
+    const wcEl = document.getElementById('modaWeekCount');
+    if (wcEl) {
+      wcEl.textContent = weekCount + '/3';
+      wcEl.className = 'moda-stat-val' + (weekCount >= 3 ? ' warn' : weekCount >= 2 ? ' ok' : '');
+    }
+
+    const todayEl = document.getElementById('modaToday');
+    if (todayEl) {
+      todayEl.textContent = doneToday ? '✓' : '—';
+      todayEl.className = 'moda-stat-val' + (doneToday ? ' ok' : '');
+    }
+
+    const totalEl = document.getElementById('modaTotal');
+    if (totalEl) totalEl.textContent = dates.length;
+
+    // 7-day dots
+    const dotsEl = document.getElementById('modaDots');
+    if (dotsEl) {
+      const last7 = getLast7();
+      dotsEl.innerHTML = last7.map((d, i) => {
+        const done = dates.includes(d);
+        const isToday = d === today;
+        return `<div class="moda-dot${done ? (isToday ? ' today' : ' done') : ''}">
+          <div class="moda-dot-circle"></div>
+          <span>${DAY_LABELS[i]}</span>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    render();
+    document.getElementById('modaLogBtn')?.addEventListener('click', () => {
+      const data = load();
+      const today = todayStr();
+      if (!data.dates.includes(today)) {
+        data.dates.unshift(today);
+        save(data); render();
+      }
+    });
+  });
+  window.addEventListener('storage', e => { if (e.key === MK) render(); });
+})();
+
 /* ── Routine Checklists ── */
 (function () {
   'use strict';
@@ -1737,7 +1875,11 @@ main {
   }
   function daysSince(dateStr) {
     if (!dateStr) return null;
-    return Math.floor((new Date() - new Date(dateStr + 'T12:00:00')) / 86400000);
+    const t = todayStr();
+    if (dateStr === t) return 0;
+    const a = new Date(t + 'T12:00:00');
+    const b = new Date(dateStr + 'T12:00:00');
+    return Math.round((a - b) / 86400000);
   }
   function addDays(dateStr, n) {
     const d = new Date(dateStr + 'T12:00:00');
@@ -1902,7 +2044,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (typeof initCloudSync !== 'function') return;
   initCloudSync({
     appKey: 'health',
-    syncedKeys: ['stack:items', 'stack:version', 'stack:low', 'po_water_v1', 'body_metrics_v1', 'body_weight_v1', 'routine_v1', 'peptides_v1', 'nonneg_v1'],
+    syncedKeys: ['stack:items', 'stack:version', 'stack:low', 'po_water_v1', 'body_metrics_v1', 'body_weight_v1', 'routine_v1', 'peptides_v1', 'nonneg_v1', 'modafinil_v1'],
     syncedPrefixes: ['stack:taken:'],
     onApplied: function () { window.dispatchEvent(new Event('storage')); }
   });

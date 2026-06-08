@@ -700,19 +700,36 @@ body::after {
   </div>
 
   <!-- Wedding Countdown -->
-  <div class="wedding-block">
-    <div class="wedding-top">
-      <div>
-        <div class="wedding-label">💍 Hochzeit</div>
-        <div class="wedding-days" id="weddingDays">—<span>Tage</span></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+    <div class="wedding-block" style="margin-bottom:0">
+      <div class="wedding-top">
+        <div>
+          <div class="wedding-label">💍 Hochzeit</div>
+          <div class="wedding-days" id="weddingDays">—<span>Tage</span></div>
+        </div>
+        <div style="text-align:right">
+          <div class="wedding-meta">08.08.2026</div>
+          <div class="wedding-meta" id="weddingCutProgress" style="margin-top:3px"></div>
+        </div>
       </div>
-      <div style="text-align:right">
-        <div class="wedding-meta" id="weddingDate">08.08.2026</div>
-        <div class="wedding-meta" id="weddingCutProgress" style="margin-top:3px"></div>
+      <div class="wedding-bar-track">
+        <div class="wedding-bar-fill" id="weddingBar" style="width:0%"></div>
       </div>
     </div>
-    <div class="wedding-bar-track">
-      <div class="wedding-bar-fill" id="weddingBar" style="width:0%"></div>
+    <div class="wedding-block" style="margin-bottom:0">
+      <div class="wedding-top">
+        <div>
+          <div class="wedding-label">👶 Baby</div>
+          <div class="wedding-days" id="babyDays">—<span>Tage</span></div>
+        </div>
+        <div style="text-align:right">
+          <div class="wedding-meta">18.12.2026</div>
+          <div class="wedding-meta" id="babyWeeks" style="margin-top:3px"></div>
+        </div>
+      </div>
+      <div class="wedding-bar-track">
+        <div class="wedding-bar-fill" id="babyBar" style="width:0%;background:linear-gradient(90deg,#7DD3FC,#C4B5FD)"></div>
+      </div>
     </div>
   </div>
 
@@ -1425,8 +1442,9 @@ body::after {
 /* ── Wedding Countdown + Non-Negotiables ── */
 (function () {
   'use strict';
-  const WEDDING = new Date('2026-08-08T00:00:00');
-  const CUT_START = new Date('2026-06-06T00:00:00'); // cut start = heute
+  const WEDDING  = new Date('2026-08-08T00:00:00');
+  const BABY     = new Date('2026-12-18T00:00:00');
+  const CUT_START = new Date('2026-06-06T00:00:00');
   const NN_KEY = 'nonneg_v1';
 
   let nnOffset = 0; // 0 = today, -1 = yesterday, -2 = day before, max back = -6
@@ -1470,7 +1488,23 @@ body::after {
     if (bar) bar.style.width = pct.toFixed(1) + '%';
 
     const prog = document.getElementById('weddingCutProgress');
-    if (prog) prog.textContent = Math.round(pct) + '% des Cuts geschafft';
+    if (prog) prog.textContent = Math.round(pct) + '% des Cuts';
+
+    // Baby countdown
+    const babyDays = Math.max(0, Math.ceil((BABY - now) / 86400000));
+    const babyEl = document.getElementById('babyDays');
+    if (babyEl) babyEl.innerHTML = babyDays + '<span>Tage</span>';
+    const babyWeeks = Math.floor(babyDays / 7);
+    const babyWeeksEl = document.getElementById('babyWeeks');
+    if (babyWeeksEl) babyWeeksEl.textContent = '≈ ' + babyWeeks + ' Wochen';
+    const babyBar = document.getElementById('babyBar');
+    if (babyBar) {
+      const babyStart = new Date('2026-03-27T00:00:00'); // ~40 Wochen vor 18.12
+      const babyTotal = BABY - babyStart;
+      const babyElapsed = now - babyStart;
+      const babyPct = Math.min(100, Math.max(0, (babyElapsed / babyTotal) * 100));
+      babyBar.style.width = babyPct.toFixed(1) + '%';
+    }
   }
 
   function calcStreak(data) {
