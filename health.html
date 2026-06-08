@@ -1707,17 +1707,20 @@ main {
     const d = new Date();
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
   }
+  function localStr(d) {
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
   function getLast7() {
     return Array(7).fill(0).map((_,i) => {
       const d = new Date(); d.setDate(d.getDate() - (6-i));
-      return d.toISOString().slice(0,10);
+      return localStr(d);
     });
   }
   function getWeekDates() {
     const d = new Date(); d.setHours(0,0,0,0);
     const day = d.getDay();
     const mon = new Date(d); mon.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
-    return Array(7).fill(0).map((_,i) => { const x = new Date(mon); x.setDate(mon.getDate()+i); return x.toISOString().slice(0,10); });
+    return Array(7).fill(0).map((_,i) => { const x = new Date(mon); x.setDate(mon.getDate()+i); return localStr(x); });
   }
   function load() { try { return JSON.parse(localStorage.getItem(MK)) || { dates: [] }; } catch { return { dates: [] }; } }
   function save(d) { try { localStorage.setItem(MK, JSON.stringify(d)); } catch {} }
@@ -1888,25 +1891,27 @@ main {
     const b = new Date(dateStr + 'T12:00:00');
     return Math.round((a - b) / 86400000);
   }
+  function localStr(d) {
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
   function addDays(dateStr, n) {
     const d = new Date(dateStr + 'T12:00:00');
     d.setDate(d.getDate() + n);
-    return d.toISOString().slice(0,10);
+    return localStr(d);
   }
   function getWeekDates() {
-    // Mon–Sun of current week
     const d = new Date(); d.setHours(0,0,0,0);
     const day = d.getDay();
     const mon = new Date(d); mon.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
     return Array(7).fill(0).map((_, i) => {
       const x = new Date(mon); x.setDate(mon.getDate() + i);
-      return x.toISOString().slice(0,10);
+      return localStr(x);
     });
   }
   function getLast7Days() {
     return Array(7).fill(0).map((_, i) => {
       const d = new Date(); d.setDate(d.getDate() - (6 - i));
-      return d.toISOString().slice(0,10);
+      return localStr(d);
     });
   }
   const DAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
