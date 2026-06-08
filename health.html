@@ -1722,6 +1722,12 @@ main {
   function load() { try { return JSON.parse(localStorage.getItem(MK)) || { dates: [] }; } catch { return { dates: [] }; } }
   function save(d) { try { localStorage.setItem(MK, JSON.stringify(d)); } catch {} }
 
+  function removeDate(dateStr) {
+    const data = load();
+    data.dates = (data.dates || []).filter(d => d !== dateStr);
+    save(data); render();
+  }
+
   function render() {
     const data = load();
     const dates = data.dates || [];
@@ -1731,11 +1737,10 @@ main {
     const btn = document.getElementById('modaLogBtn');
     if (btn) {
       btn.className = 'moda-log-btn' + (doneToday ? ' done-btn' : '');
-      btn.textContent = doneToday ? '✓ Heute genommen' : 'Genommen ✓';
-      btn.disabled = doneToday;
+      btn.textContent = doneToday ? '↩ Rückgängig' : 'Genommen ✓';
+      btn.disabled = false;
     }
 
-    // This week count
     const weekDates = getWeekDates();
     const weekCount = weekDates.filter(d => dates.includes(d)).length;
     const wcEl = document.getElementById('modaWeekCount');
@@ -1743,28 +1748,28 @@ main {
       wcEl.textContent = weekCount + '/3';
       wcEl.className = 'moda-stat-val' + (weekCount >= 3 ? ' warn' : weekCount >= 2 ? ' ok' : '');
     }
-
     const todayEl = document.getElementById('modaToday');
     if (todayEl) {
       todayEl.textContent = doneToday ? '✓' : '—';
       todayEl.className = 'moda-stat-val' + (doneToday ? ' ok' : '');
     }
-
     const totalEl = document.getElementById('modaTotal');
     if (totalEl) totalEl.textContent = dates.length;
 
-    // 7-day dots
     const dotsEl = document.getElementById('modaDots');
     if (dotsEl) {
       const last7 = getLast7();
       dotsEl.innerHTML = last7.map((d, i) => {
         const done = dates.includes(d);
         const isToday = d === today;
-        return `<div class="moda-dot${done ? (isToday ? ' today' : ' done') : ''}">
+        return `<div class="moda-dot${done ? (isToday ? ' today' : ' done') : ''}" data-date="${d}" style="cursor:${done ? 'pointer' : 'default'}" title="${done ? 'Klicken zum Löschen' : ''}">
           <div class="moda-dot-circle"></div>
           <span>${DAY_LABELS[i]}</span>
         </div>`;
       }).join('');
+      dotsEl.querySelectorAll('.moda-dot.done, .moda-dot.today').forEach(dot => {
+        dot.addEventListener('click', () => removeDate(dot.dataset.date));
+      });
     }
   }
 
@@ -1773,7 +1778,9 @@ main {
     document.getElementById('modaLogBtn')?.addEventListener('click', () => {
       const data = load();
       const today = todayStr();
-      if (!data.dates.includes(today)) {
+      if (data.dates.includes(today)) {
+        removeDate(today);
+      } else {
         data.dates.unshift(today);
         save(data); render();
       }
@@ -1942,14 +1949,24 @@ main {
           </div>`;
         }).join('');
 
+        // clickable dots
+        const dotsHtml2 = last7.map((d, i) => {
+          const isDone = dates.includes(d);
+          const isToday = d === today;
+          return `<div class="pep-dot${isDone ? (isToday ? ' today' : ' done') : ''}" data-pepid="${p.id}" data-date="${d}" style="cursor:${isDone ? 'pointer' : 'default'}" title="${isDone ? 'Klicken zum Löschen' : ''}">
+            <div class="pep-dot-circle"></div>
+            <span>${DAY_LABELS[i]}</span>
+          </div>`;
+        }).join('');
+
         const recentDates = dates.slice(0, 5);
-        const chipsHtml = recentDates.map((d, i) =>
-          `<span class="pep-chip${i > 0 ? ' old' : ''}">${dateLabel(d)}${i === 0 ? ' ✓' : ''}</span>`
+        const chipsHtml = recentDates.map(d =>
+          `<span class="pep-chip" data-pepid="${p.id}" data-date="${d}" style="cursor:pointer" title="Klicken zum Löschen">${dateLabel(d)} ×</span>`
         ).join('');
 
         bottomHtml = `
-          <div class="pep-history-label">Letzte 7 Tage</div>
-          <div class="pep-dots">${dotsHtml}</div>
+          <div class="pep-history-label">Letzte 7 Tage <span style="color:var(--text-quaternary);font-weight:400">(tippen zum Löschen)</span></div>
+          <div class="pep-dots">${dotsHtml2}</div>
           ${recentDates.length ? `<div class="pep-history-chips" style="margin-top:8px">${chipsHtml}</div>` : ''}`;
 
       } else if (p.type === 'weekly') {
@@ -1963,42 +1980,44 @@ main {
         const nextDue = last ? addDays(last, 7) : null;
         const nextHtml = nextDue && days > 0 ? `<div class="pep-next">Nächste: ${dateLabel(nextDue)}</div>` : '';
 
-        const chipsHtml = dates.slice(0, 6).map((d, i) =>
-          `<span class="pep-chip${i > 0 ? ' old' : ''}">${dateLabel(d)}${i === 0 ? ' ✓' : ''}</span>`
+        const chipsHtml = dates.slice(0, 6).map(d =>
+          `<span class="pep-chip old" data-pepid="${p.id}" data-date="${d}" style="cursor:pointer" title="Klicken zum Löschen">${dateLabel(d)} ×</span>`
         ).join('');
 
         bottomHtml = `
           ${nextHtml}
-          <div class="pep-history-label" style="margin-top:${nextDue ? 6 : 0}px">Injektionsverlauf</div>
+          <div class="pep-history-label" style="margin-top:${nextDue ? 6 : 0}px">Injektionsverlauf <span style="color:var(--text-quaternary);font-weight:400">(tippen zum Löschen)</span></div>
           <div class="pep-history-chips">${chipsHtml || '<span style="font-size:11px;color:var(--text-quaternary)">Noch keine Einträge</span>'}</div>`;
 
       } else if (p.type === 'weekly5') {
-        const weekDates = getWeekDates(); // Mo–So
+        const weekDates = getWeekDates();
         const thisDone = weekDates.filter(d => dates.includes(d));
         const count = thisDone.length;
         canLog = count < 5 && !dates.includes(today);
         statusText = count + '/5 diese Woche';
         statusCls = count >= 5 ? 'ok' : count >= 3 ? 'warn' : 'due';
 
-        // Weekday dots (Mo=0 to So=6, only show Mo–Fr = first 5)
         const dotsHtml = weekDates.slice(0, 5).map((d, i) => {
           const isDone = dates.includes(d);
           const isToday = d === today;
-          return `<div class="pep-dot${isDone ? (isToday ? ' today' : ' done') : ''}">
+          return `<div class="pep-dot${isDone ? (isToday ? ' today' : ' done') : ''}" data-pepid="${p.id}" data-date="${d}" style="cursor:${isDone ? 'pointer' : 'default'}" title="${isDone ? 'Klicken zum Löschen' : ''}">
             <div class="pep-dot-circle"></div>
             <span>${DAY_LABELS[i]}</span>
           </div>`;
         }).join('');
 
-        const chipsHtml = dates.slice(0, 8).map((d, i) =>
-          `<span class="pep-chip${i > 0 ? ' old' : ''}">${dateLabel(d)}${i === 0 ? ' ✓' : ''}</span>`
+        const chipsHtml = dates.slice(0, 8).map(d =>
+          `<span class="pep-chip old" data-pepid="${p.id}" data-date="${d}" style="cursor:pointer" title="Klicken zum Löschen">${dateLabel(d)} ×</span>`
         ).join('');
 
         bottomHtml = `
-          <div class="pep-history-label">Diese Woche (Mo–Fr)</div>
+          <div class="pep-history-label">Diese Woche (Mo–Fr) <span style="color:var(--text-quaternary);font-weight:400">(tippen zum Löschen)</span></div>
           <div class="pep-dots">${dotsHtml}</div>
           ${dates.length ? `<div class="pep-history-chips" style="margin-top:8px">${chipsHtml}</div>` : ''}`;
       }
+
+      const doneToday = dates.includes(today);
+      const isUndo = !canLog && doneToday;
 
       return `<div class="pep-card">
         <div class="pep-top">
@@ -2008,8 +2027,8 @@ main {
             <div class="pep-dose">${p.dose}</div>
             <div class="pep-status ${statusCls}">${statusText}</div>
           </div>
-          <button class="pep-log-btn${canLog ? '' : ' done-btn'}" data-id="${p.id}" ${canLog ? '' : 'disabled'}>
-            ${canLog ? 'Injiziert ✓' : '✓ Done'}
+          <button class="pep-log-btn${isUndo ? ' done-btn' : ''}" data-id="${p.id}" data-undo="${isUndo}">
+            ${canLog ? 'Injiziert ✓' : '↩ Undo'}
           </button>
         </div>
         <div class="pep-bottom">
@@ -2019,16 +2038,41 @@ main {
       </div>`;
     }).join('');
 
-    grid.querySelectorAll('.pep-log-btn:not([disabled])').forEach(btn => {
+    // Log / Undo button
+    grid.querySelectorAll('.pep-log-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const data = load();
         const id = btn.dataset.id;
         if (!data[id]) data[id] = { dates: [] };
         if (!data[id].dates) data[id].dates = [];
-        if (!data[id].dates.includes(today)) {
-          data[id].dates.unshift(today);
-          data[id].dates = data[id].dates.sort().reverse(); // newest first
+        if (btn.dataset.undo === 'true') {
+          data[id].dates = data[id].dates.filter(d => d !== today);
+        } else {
+          if (!data[id].dates.includes(today)) data[id].dates.unshift(today);
+          data[id].dates = data[id].dates.sort().reverse();
         }
+        save(data); render();
+      });
+    });
+
+    // Delete by clicking dots
+    grid.querySelectorAll('.pep-dot.done[data-pepid], .pep-dot.today[data-pepid]').forEach(dot => {
+      dot.addEventListener('click', () => {
+        const data = load();
+        const id = dot.dataset.pepid;
+        if (!data[id]) return;
+        data[id].dates = (data[id].dates || []).filter(d => d !== dot.dataset.date);
+        save(data); render();
+      });
+    });
+
+    // Delete by clicking chips
+    grid.querySelectorAll('.pep-chip[data-pepid]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const data = load();
+        const id = chip.dataset.pepid;
+        if (!data[id]) return;
+        data[id].dates = (data[id].dates || []).filter(d => d !== chip.dataset.date);
         save(data); render();
       });
     });
