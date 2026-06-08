@@ -259,6 +259,19 @@ body::after {
   border: 1px solid rgba(255,255,255,0.07);
 }
 .nonneg-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.nonneg-daynav { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.nonneg-daynav-btn {
+  background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 7px;
+  color: var(--text-tertiary); cursor: pointer; font-size: 14px; line-height: 1;
+  padding: 4px 9px; transition: color 0.15s, border-color 0.15s;
+}
+.nonneg-daynav-btn:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.25); }
+.nonneg-daynav-btn:disabled { opacity: 0.25; cursor: default; }
+.nonneg-daylabel {
+  flex: 1; text-align: center; font-size: 11px; font-family: var(--font-mono);
+  font-weight: 600; color: var(--text-secondary);
+}
+.nonneg-daylabel.past { color: var(--text-tertiary); }
 .nonneg-title { font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-tertiary); }
 .nonneg-streak {
   display: flex; align-items: center; gap: 5px;
@@ -708,6 +721,11 @@ body::after {
     <div class="nonneg-head">
       <div class="nonneg-title">⭐ Non-Negotiables</div>
       <div class="nonneg-streak"><span class="nonneg-streak-fire">🔥</span><span id="nnStreak">0</span> Tage</div>
+    </div>
+    <div class="nonneg-daynav">
+      <button class="nonneg-daynav-btn" id="nnPrev">‹</button>
+      <div class="nonneg-daylabel" id="nnDayLabel">Heute</div>
+      <button class="nonneg-daynav-btn" id="nnNext" disabled>›</button>
     </div>
     <div class="nonneg-items">
       <div class="nonneg-item" id="nn-protein" data-key="protein">
@@ -1411,10 +1429,26 @@ body::after {
   const CUT_START = new Date('2026-06-06T00:00:00'); // cut start = heute
   const NN_KEY = 'nonneg_v1';
 
+  let nnOffset = 0; // 0 = today, -1 = yesterday, -2 = day before, max back = -6
+  const NN_MAX_BACK = 6;
+
   function todayStr() {
     const d = new Date();
     if (d.getHours() < 6) d.setDate(d.getDate() - 1);
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function offsetStr(offset) {
+    const d = new Date();
+    if (d.getHours() < 6) d.setDate(d.getDate() - 1);
+    d.setDate(d.getDate() + offset);
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function dayLabelFor(offset) {
+    if (offset === 0) return 'Heute';
+    if (offset === -1) return 'Gestern';
+    const d = new Date();
+    d.setDate(d.getDate() + offset);
+    return d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.';
   }
 
   function loadNN() {
@@ -1452,15 +1486,25 @@ body::after {
 
   function renderNN() {
     const data = loadNN();
-    const today = todayStr();
-    const todayData = data[today] || { protein: false, steps: false, sleep: false };
-    const keys = ['protein', 'steps', 'sleep'];
+    const activeDate = offsetStr(nnOffset);
+    const activeData = data[activeDate] || { protein: false, steps: false, sleep: false };
 
-    keys.forEach(key => {
+    // day nav label
+    const labelEl = document.getElementById('nnDayLabel');
+    if (labelEl) {
+      labelEl.textContent = dayLabelFor(nnOffset);
+      labelEl.className = 'nonneg-daylabel' + (nnOffset < 0 ? ' past' : '');
+    }
+    const prevBtn = document.getElementById('nnPrev');
+    const nextBtn = document.getElementById('nnNext');
+    if (prevBtn) prevBtn.disabled = nnOffset <= -NN_MAX_BACK;
+    if (nextBtn) nextBtn.disabled = nnOffset >= 0;
+
+    ['protein', 'steps', 'sleep'].forEach(key => {
       const item = document.getElementById('nn-' + key);
       const check = document.getElementById('nn-' + key + '-check');
       if (!item || !check) return;
-      const done = !!todayData[key];
+      const done = !!activeData[key];
       item.classList.toggle('done', done);
       check.textContent = done ? '✓' : '';
     });
@@ -1472,9 +1516,9 @@ body::after {
 
   function toggleNN(key) {
     const data = loadNN();
-    const today = todayStr();
-    if (!data[today]) data[today] = { protein: false, steps: false, sleep: false };
-    data[today][key] = !data[today][key];
+    const activeDate = offsetStr(nnOffset);
+    if (!data[activeDate]) data[activeDate] = { protein: false, steps: false, sleep: false };
+    data[activeDate][key] = !data[activeDate][key];
     saveNN(data);
     renderNN();
   }
@@ -1484,6 +1528,12 @@ body::after {
     renderNN();
     ['protein', 'steps', 'sleep'].forEach(key => {
       document.getElementById('nn-' + key)?.addEventListener('click', () => toggleNN(key));
+    });
+    document.getElementById('nnPrev')?.addEventListener('click', () => {
+      if (nnOffset > -NN_MAX_BACK) { nnOffset--; renderNN(); }
+    });
+    document.getElementById('nnNext')?.addEventListener('click', () => {
+      if (nnOffset < 0) { nnOffset++; renderNN(); }
     });
   });
 
