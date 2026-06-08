@@ -1474,11 +1474,23 @@ body::after {
   }
 
   function calcStreak(data) {
-    const keys = Object.keys(data).sort().reverse();
+    // Walk backwards day by day from yesterday (skip today if incomplete)
     let streak = 0;
-    for (const k of keys) {
-      const d = data[k];
-      if (d.protein && d.steps && d.sleep) streak++;
+    const base = new Date();
+    if (base.getHours() < 6) base.setDate(base.getDate() - 1);
+    base.setHours(0, 0, 0, 0);
+
+    // If today is fully complete, count it too
+    const todayKey = offsetStr(0);
+    const todayDone = (data[todayKey] || {});
+    let startOffset = (todayDone.protein && todayDone.steps && todayDone.sleep) ? 0 : -1;
+
+    for (let i = startOffset; i >= -365; i--) {
+      const d = new Date(base);
+      d.setDate(base.getDate() + i);
+      const key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+      const entry = data[key] || {};
+      if (entry.protein && entry.steps && entry.sleep) streak++;
       else break;
     }
     return streak;
